@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/crud-produto-pedido-itens
+    username: postgres
+    password: 1234567
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      default_schema: public
+
+    show-sql: true
+
+
+  logging:
+    level:
+      org:
+        hibernate:
+          SQL: DEBUG
+
+  server:
+    error:
+      include-stacktrace: never
+    port: 8080
