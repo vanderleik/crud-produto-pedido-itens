@@ -12,6 +12,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -38,7 +40,8 @@ public class OrderEntity {
     @Enumerated(EnumType.STRING)
     private EnumOrderStatus status;
 
-//    private List<OrderItem> items = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItemEntity> items = new ArrayList<>();
 
     @Column(name = "grossstotal")
     private BigDecimal grosssTotal;
