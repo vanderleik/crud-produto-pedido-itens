@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/crud-produto-pedido-itens
-    username: postgres
-    password: 1234567
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 
   jpa:
     hibernate:
@@ -22,3 +22,6 @@ spring:
     error:
       include-stacktrace: never
     port: 8080
+
+  config:
+    import: optional:file:.env[.*]
