@@ -6,7 +6,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +16,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build and execute testes with Maven on 'cadastro'
+      - name: Build and execute testes with Maven
         run: |
-          mvn -B package --file pom.xml
-          mvn test
+          mvn -B -e -X package --file pom.xml
+          mvn -B -e test
