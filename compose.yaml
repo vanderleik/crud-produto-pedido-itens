@@ -1,9 +1,25 @@
+version: '3.8'
+
 services:
-  postgres:
-    image: 'postgres:latest'
+
+  # Banco de dados
+  postgresql-db:
+    image: postgres:15-alpine
+    restart: always
+    container_name: postgresql-db
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+        POSTGRES_DB: crud-produto-pedido-itens
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: 1234567
     ports:
-      - '5432'
+        - "5432:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    networks:
+      - main-network
+networks:
+    main-network:
+        driver: bridge
+
+volumes:
+    postgresql-data:
