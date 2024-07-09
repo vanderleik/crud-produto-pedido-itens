@@ -1,5 +1,6 @@
 package com.produtopedidoitens.api.domain.entities;
 
+import com.produtopedidoitens.api.domain.enums.EnumProductType;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -35,9 +36,15 @@ public class ProductEntity {
     private String productName;
 
     @NotNull(message = MessagesConstants.PRODUCT_PRICE_NOT_NULL)
+    @Positive(message = MessagesConstants.PRODUCT_PRICE_POSITIVE)
     @Positive
     @Column(name = "price")
     private BigDecimal price;
+
+    @NotNull(message = MessagesConstants.PRODUCT_TYPE_NOT_NULL)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private EnumProductType type;
 
     @NotNull(message = MessagesConstants.PRODUCT_ACTIVE_NOT_NULL)
     @Column(name = "active")
