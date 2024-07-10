@@ -143,6 +143,15 @@ class ProductServiceImplTest {
     }
 
     @Test
+    @DisplayName("Deve retornar um erro ao buscar um produto pelo id")
+    void testReadError() {
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.read(productEntity.getId()));
+        assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
     void testUpdate() {
     }
 
