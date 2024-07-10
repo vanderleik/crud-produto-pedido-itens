@@ -188,7 +188,7 @@ class OrderControllerTest {
     void testDeleteError() throws Exception {
         doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER))
                 .when(orderInputPort).delete(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"));
-        
+
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
