@@ -32,7 +32,7 @@ public class OrderEntity {
     private UUID id;
 
     @NotNull(message = MessagesConstants.ORDER_DATE_NOT_NULL)
-    @Column(name = "idcustomer")
+    @Column(name = "orderdate")
     private LocalDate orderDate;
 
     @NotNull(message = MessagesConstants.ORDER_DATE_STATUS_NOT_NULL)
