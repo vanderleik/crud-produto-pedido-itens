@@ -1,4 +1,4 @@
-CREATE TABLE tbproduct (
+CREATE TABLE IF NOT EXISTS tbproduct (
    idproduct UUID PRIMARY KEY DEFAULT gen_random_uuid(),
    productname VARCHAR(60) NOT NULL,
    price NUMERIC(19,2) NOT NULL CHECK (price > 0),

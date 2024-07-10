@@ -1,4 +1,4 @@
-package com.produtopedidoitens.api.domain.entities;
+package com.produtopedidoitens.api.application.domain.entities;
 
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import jakarta.persistence.*;

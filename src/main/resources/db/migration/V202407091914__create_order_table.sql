@@ -1,4 +1,4 @@
-CREATE TABLE tborder (
+CREATE TABLE IF NOT EXISTS tborder (
      idorder UUID PRIMARY KEY DEFAULT gen_random_uuid(),
      orderdate DATE NOT NULL,
      status VARCHAR(255) NOT NULL,
