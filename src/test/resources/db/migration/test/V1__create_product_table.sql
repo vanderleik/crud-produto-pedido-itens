@@ -7,5 +7,5 @@ CREATE TABLE tbproduct (
     dthreg TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     dthalt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     version BIGINT,
-    CONSTRAINT tbwine_pk PRIMARY KEY (idproduct)
+    CONSTRAINT tbproduct_pk PRIMARY KEY (idproduct)
 );
