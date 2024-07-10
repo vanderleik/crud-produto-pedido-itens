@@ -32,7 +32,7 @@ public class OrderEntity {
     private UUID id;
 
     @NotNull(message = MessagesConstants.ORDER_DATE_NOT_NULL)
-    @Column(name = "idcustomer")
+    @Column(name = "orderdate")
     private LocalDate orderDate;
 
     @NotNull(message = MessagesConstants.ORDER_DATE_STATUS_NOT_NULL)
@@ -43,8 +43,8 @@ public class OrderEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItemEntity> items = new ArrayList<>();
 
-    @Column(name = "grossstotal")
-    private BigDecimal grosssTotal;
+    @Column(name = "grosstotal")
+    private BigDecimal grossTotal;
 
     @Positive(message = MessagesConstants.ORDER_DISCOUNT_POSITIVE)
     @Column(name = "discount")
