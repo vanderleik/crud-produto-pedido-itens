@@ -76,10 +76,18 @@ public class ProductServiceImpl implements ProductInputPort {
         }
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(UUID id) {
-
+        log.info("delete:: Recebendo requisição para deletar produto/serviço pelo id: {}", id);
+        ProductEntity entity = getProductEntity(id);
+        try {
+            productRepository.delete(entity);
+            log.info("delete:: Deletando produto/serviço da base: {}", entity);
+        } catch (Exception e) {
+            log.error("delete:: Ocorreu um erro ao deletar o produto/serviço");
+            throw new BadRequestException(MessagesConstants.ERROR_DELETE_PRODUCT);
+        }
     }
 
     private static void updateEntity(ProductRequest productRequest, ProductEntity entity) {

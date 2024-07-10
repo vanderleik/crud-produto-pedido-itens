@@ -23,8 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -185,7 +184,28 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void testDelete() {
+    @DisplayName("Deve deletar um produto com sucesso")
+    void testDeleteSuccess() {
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+
+        assertDoesNotThrow(() -> productServiceImpl.delete(productEntity.getId()));
+        verify(productRepository).findById(productEntity.getId());
+        verify(productRepository).delete(productEntity);
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao deletar um produto")
+    void testDeleteError() {
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.delete(productEntity.getId()));
+        assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
+
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_PRODUCT)).when(productRepository).delete(productEntity);
+
+        exception = assertThrows(Exception.class, () -> productServiceImpl.delete(productEntity.getId()));
+        assertEquals(MessagesConstants.ERROR_DELETE_PRODUCT, exception.getMessage());
     }
 
 }

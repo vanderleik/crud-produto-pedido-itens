@@ -11,6 +11,7 @@ public class MessagesConstants {
     public static final String ERROR_SAVE_PRODUCT = "Erro ao salvar produto/serviço";
     public static final String ERROR_PRODUCT_NOT_FOUND = "Nenhum produto/serviço encontrado";
     public static final String ERROR_UPDATE_PRODUCT = "Erro ao atualizar produto/serviço";
+    public static final String ERROR_DELETE_PRODUCT = "Erro ao deletar produto/serviço";
 
     //ORDER
     public static final String ORDER_DATE_NOT_NULL = "A data do pedido não pode ser nula";
