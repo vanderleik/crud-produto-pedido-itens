@@ -43,18 +43,27 @@ public class ProductServiceImpl implements ProductInputPort {
     @Override
     public List<ProductResponse> list() {
         log.info("list:: Listando produtos/serviços");
-        List<ProductEntity> list = productRepository.findAll();
-        if (list.isEmpty()) {
-            log.error("list:: Ocorreu um erro ao listar os produtos/serviços: {}", MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
-            throw new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
-        }
+        List<ProductEntity> list = getProductEntities();
         log.info("list:: Produtos/serviços listados com sucesso: {}", list);
         return list.stream().map(productConverter::toResponse).toList();
     }
 
+
     @Override
     public ProductResponse read(UUID id) {
-        return null;
+        log.info("read:: Buscando produto/serviço pelo id: {}", id);
+        ProductEntity entity = getProductEntity(id);
+        log.info("read:: Produto/serviço encontrado: {}", entity);
+        return productConverter.toResponse(entity);
+    }
+
+    private ProductEntity getProductEntity(UUID id) {
+        ProductEntity entity = productRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("read:: Ocorreu um erro ao buscar o produto/serviço pelo id: {}", MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
+                    throw new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
+                });
+        return entity;
     }
 
     @Override
@@ -69,6 +78,15 @@ public class ProductServiceImpl implements ProductInputPort {
 
     private ProductEntity getEntity(ProductRequest productRequest) {
         return productConverter.toEntity(productRequest);
+    }
+
+    private List<ProductEntity> getProductEntities() {
+        List<ProductEntity> list = productRepository.findAll();
+        if (list.isEmpty()) {
+            log.error("list:: Ocorreu um erro ao listar os produtos/serviços: {}", MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
+            throw new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
+        }
+        return list;
     }
 
 }

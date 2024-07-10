@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -128,10 +129,17 @@ class ProductServiceImplTest {
     @Test
     @DisplayName("Deve retornar um produto pelo id")
     void testReadSuccess() {
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        when(productConverter.toResponse(productEntity)).thenReturn(productResponse);
 
         ProductResponse response = assertDoesNotThrow(() -> productServiceImpl.read(productEntity.getId()));
-        assertNull(response);
-
+        assertNotNull(response);
+        assertEquals(productResponse.productName(), response.productName());
+        assertEquals(productResponse.price(), response.price());
+        assertEquals(productResponse.type(), response.type());
+        assertEquals(productResponse.active(), response.active());
+        verify(productRepository).findById(productEntity.getId());
+        verify(productConverter).toResponse(productEntity);
     }
 
     @Test
