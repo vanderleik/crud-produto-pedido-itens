@@ -76,7 +76,17 @@ class OrderRepositoryTest {
         assertEquals(orderSaved, order);
     }
 
-    // update
+    @Test
+    @DisplayName("Deve atualizar um pedido")
+    void testUpdateOrder() {
+        OrderEntity orderSaved = assertDoesNotThrow(() -> orderRepository.save(orderEntity));
+
+        orderSaved.setStatus(EnumOrderStatus.CLOSED);
+        OrderEntity orderUpdated = assertDoesNotThrow(() -> orderRepository.save(orderSaved));
+
+        assertNotNull(orderUpdated);
+        assertEquals(orderSaved.getStatus(), orderUpdated.getStatus());
+    }
     // delete
 
 }
