@@ -1,6 +1,6 @@
-package com.produtopedidoitens.api.domain.entities;
+package com.produtopedidoitens.api.application.domain.entities;
 
-import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
