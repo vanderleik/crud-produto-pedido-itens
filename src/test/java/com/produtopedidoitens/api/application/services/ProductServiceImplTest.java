@@ -152,7 +152,36 @@ class ProductServiceImplTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar um produto com sucesso")
     void testUpdate() {
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        when(productRepository.save(productEntity)).thenReturn(productEntity);
+        when(productConverter.toResponse(productEntity)).thenReturn(productResponse);
+
+        ProductResponse response = assertDoesNotThrow(() -> productServiceImpl.update(productEntity.getId(), productRequest));
+        assertNotNull(response);
+        assertEquals(productResponse.productName(), response.productName());
+        assertEquals(productResponse.price(), response.price());
+        assertEquals(productResponse.type(), response.type());
+        assertEquals(productResponse.active(), response.active());
+        verify(productRepository).findById(productEntity.getId());
+        verify(productRepository).save(productEntity);
+        verify(productConverter).toResponse(productEntity);
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao atualizar um produto")
+    void testUpdateError() {
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.update(productEntity.getId(), productRequest));
+        assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
+
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        when(productRepository.save(productEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_PRODUCT));
+
+        exception = assertThrows(Exception.class, () -> productServiceImpl.update(productEntity.getId(), productRequest));
+        assertEquals(MessagesConstants.ERROR_UPDATE_PRODUCT, exception.getMessage());
     }
 
     @Test
