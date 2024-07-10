@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,8 +32,11 @@ public class ProductController {
         return ResponseEntity.ok(productInputPort.list());
     }
 
-
-//    ProductResponse read(UUID id);
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> read(@PathVariable String id) {
+        log.info("read:: Recebendo requisição para buscar um produto pelo id: {}", id);
+        return ResponseEntity.ok(productInputPort.read(UUID.fromString(id)));
+    }
 
 
 //    ProductResponse update(UUID id, ProductRequest productRequest);
