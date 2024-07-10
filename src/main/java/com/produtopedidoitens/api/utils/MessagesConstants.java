@@ -3,11 +3,15 @@ package com.produtopedidoitens.api.utils;
 public class MessagesConstants {
 
     //PRODUCT
-    public static final String PRODUCT_NAME_NOT_BLANK = "O nome do produto não pode ser vazio";
-    public static final String PRODUCT_PRICE_NOT_NULL = "O preço do produto não pode ser nulo";
-    public static final String PRODUCT_ACTIVE_NOT_NULL = "O status do produto não pode ser nulo";
-    public static final String PRODUCT_PRICE_POSITIVE = "O preço do produto deve ser um valor positivo";
-    public static final String PRODUCT_TYPE_NOT_NULL = "O tipo do produto não pode ser nulo";
+    public static final String PRODUCT_NAME_NOT_BLANK = "O nome do produto/serviço não pode ser vazio";
+    public static final String PRODUCT_PRICE_NOT_NULL = "O preço do produto/serviço não pode ser nulo";
+    public static final String PRODUCT_ACTIVE_NOT_NULL = "O status do produto/serviço não pode ser nulo";
+    public static final String PRODUCT_PRICE_POSITIVE = "O preço do produto/serviço deve ser um valor positivo";
+    public static final String PRODUCT_TYPE_NOT_NULL = "O tipo do produto/serviço não pode ser nulo";
+    public static final String ERROR_SAVE_PRODUCT = "Erro ao salvar produto/serviço";
+    public static final String ERROR_PRODUCT_NOT_FOUND = "Nenhum produto/serviço encontrado";
+    public static final String ERROR_UPDATE_PRODUCT = "Erro ao atualizar produto/serviço";
+    public static final String ERROR_DELETE_PRODUCT = "Erro ao deletar produto/serviço";
 
     //ORDER
     public static final String ORDER_DATE_NOT_NULL = "A data do pedido não pode ser nula";
