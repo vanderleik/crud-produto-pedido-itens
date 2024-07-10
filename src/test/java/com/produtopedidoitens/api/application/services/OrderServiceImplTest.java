@@ -25,8 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
@@ -202,6 +201,27 @@ class OrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("Deve deletar um pedido")
     void testDelete() {
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
+
+        assertDoesNotThrow(() -> orderServiceImpl.delete(orderEntity.getId()));
+        verify(orderRepository).findById(orderEntity.getId());
+        verify(orderRepository).delete(orderEntity);
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao deletar um pedido")
+    void testDeleteError() {
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.delete(orderEntity.getId()));
+        assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
+
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
+        doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER)).when(orderRepository).delete(orderEntity);
+
+        exception = assertThrows(Exception.class, () -> orderServiceImpl.delete(orderEntity.getId()));
+        assertEquals(MessagesConstants.ERROR_DELETE_ORDER, exception.getMessage());
     }
 }

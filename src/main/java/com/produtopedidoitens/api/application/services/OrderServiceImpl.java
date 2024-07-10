@@ -77,11 +77,18 @@ public class OrderServiceImpl implements OrderInputPort {
         }
     }
 
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(UUID id) {
-
+        log.info("delete:: Recebendo requisição para deletar pedido por id: {}", id);
+        OrderEntity entity = getOrderEntity(id);
+        try {
+            orderRepository.delete(entity);
+            log.info("delete:: Deletando pedido da base: {}", entity);
+        } catch (Exception e) {
+            log.error("delete:: Ocorreu um erro ao deletar pedido");
+            throw new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER);
+        }
     }
 
     private static void updateEntity(OrderEntity entity, OrderRequest orderRequest) {
