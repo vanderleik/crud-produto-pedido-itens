@@ -1,4 +1,4 @@
-CREATE TABLE tborderitem (
+CREATE TABLE IF NOT EXISTS tborderitem (
     idorderitem UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     orderid UUID NOT NULL,
     productid UUID NOT NULL,
