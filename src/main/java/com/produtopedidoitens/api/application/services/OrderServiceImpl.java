@@ -48,11 +48,14 @@ public class OrderServiceImpl implements OrderInputPort {
         return list.stream().map(orderConverter::toResponse).toList();
     }
 
-
     @Override
     public OrderResponse read(UUID id) {
-        return null;
+        log.info("read:: Buscando pedido por id: {}", id);
+        OrderEntity entity = getOrderEntity(id);
+        log.info("read:: Pedido encontrado: {}", entity);
+        return orderConverter.toResponse(entity);
     }
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -64,6 +67,14 @@ public class OrderServiceImpl implements OrderInputPort {
     @Override
     public void delete(UUID id) {
 
+    }
+
+    private OrderEntity getOrderEntity(UUID id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("read:: Ocorreu um erro ao buscar pedido por id: {}", MessagesConstants.ERROR_NOT_FOUND_ORDER);
+                    throw new OrderNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER);
+                });
     }
 
     private OrderEntity getEntity(OrderRequest orderRequest) {

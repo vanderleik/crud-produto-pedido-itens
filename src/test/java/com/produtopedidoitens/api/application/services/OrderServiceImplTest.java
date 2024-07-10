@@ -139,7 +139,21 @@ class OrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("Deve buscar um pedido por id")
     void testRead() {
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(java.util.Optional.of(orderEntity));
+        when(orderConverter.toResponse(orderEntity)).thenReturn(orderResponse);
+
+        OrderResponse response = assertDoesNotThrow(() -> orderServiceImpl.read(orderEntity.getId()));
+        assertNotNull(response);
+        assertEquals(orderResponse.orderDate(), response.orderDate());
+        assertEquals(orderResponse.status(), response.status());
+        assertEquals(orderResponse.items(), response.items());
+        assertEquals(orderResponse.grossTotal(), response.grossTotal());
+        assertEquals(orderResponse.discount(), response.discount());
+        assertEquals(orderResponse.netTotal(), response.netTotal());
+        verify(orderRepository).findById(orderEntity.getId());
+        verify(orderConverter).toResponse(orderEntity);
     }
 
     @Test
