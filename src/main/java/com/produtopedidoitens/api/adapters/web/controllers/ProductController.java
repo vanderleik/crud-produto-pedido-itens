@@ -44,8 +44,11 @@ public class ProductController {
         return ResponseEntity.ok(productInputPort.update(UUID.fromString(id), productRequest));
     }
 
-
-//    void delete(UUID id);
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        log.info("delete:: Recebendo requisição para deletar um produto pelo id: {}", id);
+        productInputPort.delete(UUID.fromString(id));
+        return ResponseEntity.noContent().build();
+    }
 
 }

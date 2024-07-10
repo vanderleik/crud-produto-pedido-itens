@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(controllers = ProductController.class)
@@ -167,6 +168,28 @@ class ProductControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Erro ao atualizar produto/serviço\"}"));
+    }
+
+    @Test
+    @DisplayName("Deve deletar um produto")
+    void testDelete() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao deletar um produto")
+    void testDeleteError() throws Exception {
+        doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_PRODUCT))
+                .when(productInputPort).delete(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Erro ao deletar produto/serviço\"}"));
     }
 
 }
