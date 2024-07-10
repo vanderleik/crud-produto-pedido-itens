@@ -142,4 +142,31 @@ class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Nenhum produto/serviço encontrado\"}"));
     }
 
+    @Test
+    @DisplayName("Deve atualizar um produto")
+    void testUpdate() throws Exception {
+        when(productInputPort.update(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"), productRequest)).thenReturn(productResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.put(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productRequest)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(productResponse)));
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao atualizar um produto")
+    void testUpdateError() throws Exception {
+        when(productInputPort.update(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"), productRequest))
+                .thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_PRODUCT));
+
+        mockMvc.perform(MockMvcRequestBuilders.put(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productRequest)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Erro ao atualizar produto/serviço\"}"));
+    }
+
 }

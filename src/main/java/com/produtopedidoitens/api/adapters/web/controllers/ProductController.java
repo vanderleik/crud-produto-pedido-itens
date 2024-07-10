@@ -38,8 +38,11 @@ public class ProductController {
         return ResponseEntity.ok(productInputPort.read(UUID.fromString(id)));
     }
 
-
-//    ProductResponse update(UUID id, ProductRequest productRequest);
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> update(@PathVariable String id, @Valid @RequestBody ProductRequest productRequest) {
+        log.info("update:: Recebendo requisição para atualizar um produto com os dados: {}", productRequest);
+        return ResponseEntity.ok(productInputPort.update(UUID.fromString(id), productRequest));
+    }
 
 
 //    void delete(UUID id);
