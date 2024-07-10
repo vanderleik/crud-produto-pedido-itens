@@ -8,6 +8,7 @@ public class MessagesConstants {
     public static final String PRODUCT_ACTIVE_NOT_NULL = "O status do produto não pode ser nulo";
     public static final String PRODUCT_PRICE_POSITIVE = "O preço do produto deve ser um valor positivo";
     public static final String PRODUCT_TYPE_NOT_NULL = "O tipo do produto não pode ser nulo";
+    public static final String ERROR_SAVE_PRODUCT = "Erro ao salvar produto";
 
     //ORDER
     public static final String ORDER_DATE_NOT_NULL = "A data do pedido não pode ser nula";
