@@ -2,7 +2,6 @@ package com.produtopedidoitens.api.adapters.persistence.repositories;
 
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
 @DataJpaTest
 @ActiveProfiles("test")
 class OrderRepositoryTest {
@@ -59,7 +57,6 @@ class OrderRepositoryTest {
         OrderEntity orderSaved = assertDoesNotThrow(() -> orderRepository.save(orderEntity));
 
         List<OrderEntity> orders = assertDoesNotThrow(() -> orderRepository.findAll());
-        log.info("orders: {}", orders);
         assertNotNull(orders);
         assertFalse(orders.isEmpty());
         assertTrue(orders.contains(orderSaved));
@@ -87,6 +84,16 @@ class OrderRepositoryTest {
         assertNotNull(orderUpdated);
         assertEquals(orderSaved.getStatus(), orderUpdated.getStatus());
     }
-    // delete
+
+    @Test
+    @DisplayName("Deve deletar um pedido")
+    void testDeleteOrder() {
+        OrderEntity orderSaved = assertDoesNotThrow(() -> orderRepository.save(orderEntity));
+
+        assertDoesNotThrow(() -> orderRepository.delete(orderSaved));
+
+        OrderEntity order = assertDoesNotThrow(() -> orderRepository.findById(orderSaved.getId()).orElse(null));
+        assertNull(order);
+    }
 
 }
