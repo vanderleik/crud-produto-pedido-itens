@@ -4,8 +4,10 @@ import com.produtopedidoitens.api.adapters.persistence.repositories.OrderReposit
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
+import com.produtopedidoitens.api.application.mapper.EnumConverter;
 import com.produtopedidoitens.api.application.mapper.OrderConverter;
 import com.produtopedidoitens.api.application.port.OrderInputPort;
 import com.produtopedidoitens.api.utils.MessagesConstants;
@@ -14,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,17 +60,37 @@ public class OrderServiceImpl implements OrderInputPort {
         return orderConverter.toResponse(entity);
     }
 
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public OrderResponse update(UUID id, OrderRequest orderRequest) {
-        return null;
+        log.info("update:: Recebendo requisição para atualizar pedido: {}", orderRequest);
+        OrderEntity entity = getOrderEntity(id);
+        updateEntity(entity, orderRequest);
+        try {
+            OrderEntity entitySaved = orderRepository.save(entity);
+            OrderResponse response = orderConverter.toResponse(entitySaved);
+            log.info("update:: Atualizando pedido: {}", response);
+            return response;
+        } catch (Exception e) {
+            log.error("update:: Ocorreu um erro ao atualizar pedido");
+            throw new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER);
+        }
     }
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(UUID id) {
 
+    }
+
+    private static void updateEntity(OrderEntity entity, OrderRequest orderRequest) {
+        entity.setOrderDate(orderRequest.orderDate() == null ? entity.getOrderDate() : orderRequest.orderDate());
+        entity.setStatus(orderRequest.status() == null ? entity.getStatus() : EnumConverter.fromString(orderRequest.status(), EnumOrderStatus.class));
+        entity.setItems(orderRequest.items() == null ? entity.getItems() : new ArrayList<>());// TODO
+        entity.setGrossTotal(orderRequest.grossTotal() == null ? entity.getGrossTotal() : new BigDecimal(orderRequest.grossTotal()));
+        entity.setDiscount(orderRequest.discount() == null ? entity.getDiscount() : new BigDecimal(orderRequest.discount()));
+        entity.setNetTotal(orderRequest.netTotal() == null ? entity.getNetTotal() : new BigDecimal(orderRequest.netTotal()));
     }
 
     private OrderEntity getOrderEntity(UUID id) {

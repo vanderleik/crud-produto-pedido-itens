@@ -167,7 +167,38 @@ class OrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar um pedido")
     void testUpdate() {
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
+        when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
+        when(orderConverter.toResponse(orderEntity)).thenReturn(orderResponse);
+
+        OrderResponse response = assertDoesNotThrow(() -> orderServiceImpl.update(orderEntity.getId(), orderRequest));
+        assertNotNull(response);
+        assertEquals(orderResponse.orderDate(), response.orderDate());
+        assertEquals(orderResponse.status(), response.status());
+        assertEquals(orderResponse.items(), response.items());
+        assertEquals(orderResponse.grossTotal(), response.grossTotal());
+        assertEquals(orderResponse.discount(), response.discount());
+        assertEquals(orderResponse.netTotal(), response.netTotal());
+        verify(orderRepository).findById(orderEntity.getId());
+        verify(orderRepository).save(orderEntity);
+        verify(orderConverter).toResponse(orderEntity);
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao atualizar um pedido")
+    void testUpdateError() {
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.update(orderEntity.getId(), orderRequest));
+        assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
+
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
+        when(orderRepository.save(orderEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER));
+
+        exception = assertThrows(Exception.class, () -> orderServiceImpl.update(orderEntity.getId(), orderRequest));
+        assertEquals(MessagesConstants.ERROR_UPDATE_ORDER, exception.getMessage());
     }
 
     @Test
