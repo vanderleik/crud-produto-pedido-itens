@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -141,7 +142,7 @@ class OrderServiceImplTest {
     @Test
     @DisplayName("Deve buscar um pedido por id")
     void testRead() {
-        when(orderRepository.findById(orderEntity.getId())).thenReturn(java.util.Optional.of(orderEntity));
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
         when(orderConverter.toResponse(orderEntity)).thenReturn(orderResponse);
 
         OrderResponse response = assertDoesNotThrow(() -> orderServiceImpl.read(orderEntity.getId()));
@@ -154,6 +155,15 @@ class OrderServiceImplTest {
         assertEquals(orderResponse.netTotal(), response.netTotal());
         verify(orderRepository).findById(orderEntity.getId());
         verify(orderConverter).toResponse(orderEntity);
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao buscar um pedido por id")
+    void testReadError() {
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.read(orderEntity.getId()));
+        assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
     }
 
     @Test
