@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,7 +111,31 @@ class OrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("Deve listar pedidos")
     void testList() {
+        when(orderRepository.findAll()).thenReturn(List.of(orderEntity));
+        when(orderConverter.toResponse(orderEntity)).thenReturn(orderResponse);
+
+        List<OrderResponse> responseList = assertDoesNotThrow(() -> orderServiceImpl.list());
+        assertNotNull(responseList);
+        assertEquals(1, responseList.size());
+        assertEquals(orderResponse.orderDate(), responseList.get(0).orderDate());
+        assertEquals(orderResponse.status(), responseList.get(0).status());
+        assertEquals(orderResponse.items(), responseList.get(0).items());
+        assertEquals(orderResponse.grossTotal(), responseList.get(0).grossTotal());
+        assertEquals(orderResponse.discount(), responseList.get(0).discount());
+        assertEquals(orderResponse.netTotal(), responseList.get(0).netTotal());
+        verify(orderRepository).findAll();
+        verify(orderConverter).toResponse(orderEntity);
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao listar pedidos")
+    void testListError() {
+        when(orderRepository.findAll()).thenReturn(new ArrayList<>());
+
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.list());
+        assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
     }
 
     @Test

@@ -5,6 +5,7 @@ import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
+import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.mapper.OrderConverter;
 import com.produtopedidoitens.api.application.port.OrderInputPort;
 import com.produtopedidoitens.api.utils.MessagesConstants;
@@ -39,14 +40,14 @@ public class OrderServiceImpl implements OrderInputPort {
         }
     }
 
-    private OrderEntity getEntity(OrderRequest orderRequest) {
-        return orderConverter.toEntity(orderRequest);
-    }
-
     @Override
     public List<OrderResponse> list() {
-        return List.of();
+        log.info("list:: Listando pedidos");
+        List<OrderEntity> list = getOrderEntities();
+        log.info("list:: Pedidos encontrados: {}", list);
+        return list.stream().map(orderConverter::toResponse).toList();
     }
+
 
     @Override
     public OrderResponse read(UUID id) {
@@ -64,4 +65,18 @@ public class OrderServiceImpl implements OrderInputPort {
     public void delete(UUID id) {
 
     }
+
+    private OrderEntity getEntity(OrderRequest orderRequest) {
+        return orderConverter.toEntity(orderRequest);
+    }
+
+    private List<OrderEntity> getOrderEntities() {
+        List<OrderEntity> list = orderRepository.findAll();
+        if (list.isEmpty()) {
+            log.error("list:: Nenhum pedido encontrado");
+            throw new OrderNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER);
+        }
+        return list;
+    }
+
 }
