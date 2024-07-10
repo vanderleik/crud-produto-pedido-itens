@@ -38,7 +38,7 @@ public class OrderController {
         return ResponseEntity.ok(orderInputPort.read(UUID.fromString(id)));
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<OrderResponse> update(@PathVariable String id, @Valid @RequestBody OrderRequest orderRequest) {
         log.info("update:: Recebendo requisição para atualizar um pedido com os dados: {}", orderRequest);
         return ResponseEntity.ok(orderInputPort.update(UUID.fromString(id), orderRequest));
