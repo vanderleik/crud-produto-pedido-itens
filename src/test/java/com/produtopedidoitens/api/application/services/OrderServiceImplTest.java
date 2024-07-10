@@ -5,8 +5,11 @@ import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.mapper.OrderConverter;
+import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -77,6 +80,7 @@ class OrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("Deve criar um pedido")
     void testCreate() {
         when(orderConverter.toEntity(orderRequest)).thenReturn(orderEntity);
         when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
@@ -93,6 +97,16 @@ class OrderServiceImplTest {
         verify(orderRepository).save(orderEntity);
         verify(orderConverter).toEntity(orderRequest);
         verify(orderConverter).toResponse(orderEntity);
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao salvar um pedido")
+    void testCreateError() {
+        when(orderConverter.toEntity(orderRequest)).thenReturn(orderEntity);
+        when(orderRepository.save(orderEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER));
+
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.create(orderRequest));
+        assertEquals(MessagesConstants.ERROR_SAVE_ORDER, exception.getMessage());
     }
 
     @Test
