@@ -43,8 +43,8 @@ public class OrderEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItemEntity> items = new ArrayList<>();
 
-    @Column(name = "grossstotal")
-    private BigDecimal grosssTotal;
+    @Column(name = "grosstotal")
+    private BigDecimal grossTotal;
 
     @Positive(message = MessagesConstants.ORDER_DISCOUNT_POSITIVE)
     @Column(name = "discount")
