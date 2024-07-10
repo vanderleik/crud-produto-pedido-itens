@@ -17,6 +17,7 @@ public class MessagesConstants {
     public static final String ORDER_DATE_NOT_NULL = "A data do pedido não pode ser nula";
     public static final String ORDER_DATE_STATUS_NOT_NULL = "O status do pedido não pode ser nulo";
     public static final String ORDER_DISCOUNT_POSITIVE = "O desconto do pedido deve ser um valor positivo";
+    public static final String ERROR_SAVE_ORDER = "Erro ao salvar pedido";
 
     //ORDER ITEM
     public static final String ORDER_ITEM_QUANTITY_NOT_NULL = "A quantidade do item do pedido não pode ser nula";

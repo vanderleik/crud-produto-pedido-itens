@@ -10,7 +10,7 @@ public record OrderRequest(
         LocalDate orderDate,
         String status,
         List<String> items,
-        String grosssTotal,
+        String grossTotal,
         String discount,
         String netTotal
 ) {
