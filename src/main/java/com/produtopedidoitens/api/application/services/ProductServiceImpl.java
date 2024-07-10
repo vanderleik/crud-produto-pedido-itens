@@ -5,6 +5,7 @@ import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
 import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
+import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
 import com.produtopedidoitens.api.application.mapper.ProductConverter;
 import com.produtopedidoitens.api.application.port.ProductInputPort;
 import com.produtopedidoitens.api.utils.MessagesConstants;
@@ -31,18 +32,24 @@ public class ProductServiceImpl implements ProductInputPort {
         try {
             ProductEntity entitySaved = productRepository.save(getEntity(productRequest));
             ProductResponse response = productConverter.toResponse(entitySaved);
-            log.info("create:: Salvando produto: {}", response);
+            log.info("create:: Salvando produto/serviço: {}", response);
             return response;
         } catch (Exception e) {
-            log.error("create:: Ocorreu um erro ao salvar o produto");
+            log.error("create:: Ocorreu um erro ao salvar o produto/serviço");
             throw new BadRequestException(MessagesConstants.ERROR_SAVE_PRODUCT);
         }
     }
 
-
     @Override
     public List<ProductResponse> list() {
-        return List.of();
+        log.info("list:: Listando produtos/serviços");
+        List<ProductEntity> list = productRepository.findAll();
+        if (list.isEmpty()) {
+            log.error("list:: Ocorreu um erro ao listar os produtos/serviços: {}", MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
+            throw new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
+        }
+        log.info("list:: Produtos/serviços listados com sucesso: {}", list);
+        return list.stream().map(productConverter::toResponse).toList();
     }
 
     @Override

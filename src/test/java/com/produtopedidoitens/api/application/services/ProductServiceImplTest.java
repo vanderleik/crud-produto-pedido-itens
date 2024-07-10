@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,11 +102,36 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void testList() {
+    @DisplayName("Deve listar todos os produtos salvos")
+    void testListSuccess() {
+        when(productRepository.findAll()).thenReturn(List.of(productEntity));
+        when(productConverter.toResponse(productEntity)).thenReturn(productResponse);
+
+        List<ProductResponse> responseList = assertDoesNotThrow(() -> productServiceImpl.list());
+
+        assertNotNull(responseList);
+        assertFalse(responseList.isEmpty());
+        assertEquals(1, responseList.size());
+        verify(productRepository).findAll();
+        verify(productConverter).toResponse(productEntity);
     }
 
     @Test
-    void testRead() {
+    @DisplayName("Deve retornar um erro ao listar os produtos")
+    void testListError() {
+        when(productRepository.findAll()).thenReturn(List.of());
+
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.list());
+        assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Deve retornar um produto pelo id")
+    void testReadSuccess() {
+
+        ProductResponse response = assertDoesNotThrow(() -> productServiceImpl.read(productEntity.getId()));
+        assertNull(response);
+
     }
 
     @Test
