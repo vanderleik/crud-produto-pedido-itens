@@ -53,7 +53,6 @@ class OrderRepositoryTest {
         assertEquals(orderEntity.getNetTotal(), orderSaved.getNetTotal());
     }
 
-    // list
     @Test
     @DisplayName("Deve listar todos os pedidos")
     void testListOrders() {
@@ -66,7 +65,17 @@ class OrderRepositoryTest {
         assertTrue(orders.contains(orderSaved));
         assertEquals(1, orders.size());
     }
-    // read
+
+    @Test
+    @DisplayName("Deve retornar um pedido pelo id")
+    void testFindOrderById() {
+        OrderEntity orderSaved = assertDoesNotThrow(() -> orderRepository.save(orderEntity));
+
+        OrderEntity order = assertDoesNotThrow(() -> orderRepository.findById(orderSaved.getId()).orElse(null));
+        assertNotNull(order);
+        assertEquals(orderSaved, order);
+    }
+
     // update
     // delete
 
