@@ -7,10 +7,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,11 +21,15 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductResponse> create(@Valid @RequestBody ProductRequest productRequest) {
-        log.info("Creating a product: {}", productRequest);
+        log.info("create:: Recebendo requisição para criar um produto com os dados: {}", productRequest);
         return ResponseEntity.ok(productInputPort.create(productRequest));
     }
 
-//    List<ProductResponse> list();
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> listAll() {
+        log.info("listAll:: Recebendo requisição para listar todos os produtos");
+        return ResponseEntity.ok(productInputPort.list());
+    }
 
 
 //    ProductResponse read(UUID id);

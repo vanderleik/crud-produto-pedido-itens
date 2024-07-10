@@ -22,6 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.when;
@@ -89,6 +90,30 @@ class ProductControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Erro ao salvar produto/serviço\"}"));
+    }
+
+    @Test
+    @DisplayName("Deve listar todos os produtos")
+    void testList() throws Exception {
+        when(productInputPort.list()).thenReturn(List.of(productResponse));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URL)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(List.of(productResponse))));
+    }
+
+    @Test
+    @DisplayName("Deve retornar um erro ao listar todos os produtos")
+    void testListError() throws Exception {
+        when(productInputPort.list()).thenThrow(new BadRequestException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URL)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Nenhum produto/serviço encontrado\"}"));
     }
 
 }
