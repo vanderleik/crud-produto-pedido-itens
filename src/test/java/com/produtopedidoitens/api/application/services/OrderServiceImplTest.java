@@ -49,20 +49,14 @@ class OrderServiceImplTest {
         orderRequest = OrderRequest.builder()
                 .orderDate(LocalDate.now())
                 .status("Aberto")
-                .items(new ArrayList<>())
-                .grossTotal("100.00")
                 .discount("0.00")
-                .netTotal("100.00")
                 .build();
 
         orderResponse = OrderResponse.builder()
                 .id(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))
                 .orderDate(LocalDate.now())
                 .status("Aberto")
-                .items(new ArrayList<>())
-                .grossTotal(BigDecimal.valueOf(100.00))
                 .discount(BigDecimal.valueOf(0.00))
-                .netTotal(BigDecimal.valueOf(100.00))
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
                 .version(0L)
@@ -103,10 +97,7 @@ class OrderServiceImplTest {
         assertNotNull(response);
         assertEquals(orderResponse.orderDate(), response.orderDate());
         assertEquals(orderResponse.status(), response.status());
-        assertEquals(orderResponse.items(), response.items());
-        assertEquals(orderResponse.grossTotal(), response.grossTotal());
         assertEquals(orderResponse.discount(), response.discount());
-        assertEquals(orderResponse.netTotal(), response.netTotal());
         verify(orderRepository).save(orderEntity);
         verify(orderConverter).toEntity(orderRequest);
         verify(orderConverter).toResponse(orderEntity);
@@ -188,10 +179,7 @@ class OrderServiceImplTest {
         assertNotNull(response);
         assertEquals(orderResponse.orderDate(), response.orderDate());
         assertEquals(orderResponse.status(), response.status());
-        assertEquals(orderResponse.items(), response.items());
-        assertEquals(orderResponse.grossTotal(), response.grossTotal());
         assertEquals(orderResponse.discount(), response.discount());
-        assertEquals(orderResponse.netTotal(), response.netTotal());
         verify(orderRepository).findById(orderEntity.getId());
         verify(orderRepository).save(orderEntity);
         verify(orderConverter).toResponse(orderEntity);

@@ -31,6 +31,10 @@ public class OrderEntity {
     @Column(name = "idorder")
     private UUID id;
 
+    @NotNull(message = MessagesConstants.ORDER_NUMBER_NOT_NULL)
+    @Column(name = "ordernumber", unique = true)
+    private Long orderNumber;
+
     @NotNull(message = MessagesConstants.ORDER_DATE_NOT_NULL)
     @Column(name = "orderdate")
     private LocalDate orderDate;

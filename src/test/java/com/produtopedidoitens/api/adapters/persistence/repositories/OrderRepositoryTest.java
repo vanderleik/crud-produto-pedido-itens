@@ -28,6 +28,7 @@ class OrderRepositoryTest {
     @BeforeEach
     void setUp() {
         orderEntity = OrderEntity.builder()
+                .orderNumber(1L)
                 .orderDate(LocalDate.now())
                 .status(EnumOrderStatus.OPEN)
                 .items(new ArrayList<>())

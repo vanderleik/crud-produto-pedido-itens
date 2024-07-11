@@ -10,6 +10,7 @@ import java.util.UUID;
 @Builder
 public record OrderProjection(
         UUID id,
+        Long orderNumber,
         LocalDate orderDate,
         String status,
         List<OrderItemProjection> items,

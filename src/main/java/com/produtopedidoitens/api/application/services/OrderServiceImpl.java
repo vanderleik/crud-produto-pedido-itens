@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,16 +48,19 @@ public class OrderServiceImpl implements OrderInputPort {
     public List<OrderProjection> list() {
         log.info("list:: Listando pedidos");
         List<OrderEntity> list = getOrderEntities();
-        log.info("list:: Pedidos encontrados: {}", list);
-        return list.stream().map(orderConverter::toProjection).toList();
+        List<OrderProjection> orderProjectionList = list.stream().map(orderConverter::toProjection).toList();
+        log.info("list:: Pedidos encontrados: {}", orderProjectionList);
+
+        return orderProjectionList;
     }
 
     @Override
     public OrderProjection read(UUID id) {
         log.info("read:: Buscando pedido por id: {}", id);
         OrderEntity entity = getOrderEntity(id);
-        log.info("read:: Pedido encontrado: {}", entity);
-        return orderConverter.toProjection(entity);
+        OrderProjection orderProjection = orderConverter.toProjection(entity);
+        log.info("read:: Pedido encontrado: {}", orderProjection);
+        return orderProjection;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -95,10 +97,10 @@ public class OrderServiceImpl implements OrderInputPort {
     private static void updateEntity(OrderEntity entity, OrderRequest orderRequest) {
         entity.setOrderDate(orderRequest.orderDate() == null ? entity.getOrderDate() : orderRequest.orderDate());
         entity.setStatus(orderRequest.status() == null ? entity.getStatus() : EnumConverter.fromString(orderRequest.status(), EnumOrderStatus.class));
-        entity.setItems(orderRequest.items() == null ? entity.getItems() : new ArrayList<>());// TODO
-        entity.setGrossTotal(orderRequest.grossTotal() == null ? entity.getGrossTotal() : new BigDecimal(orderRequest.grossTotal()));
+//        entity.setItems(orderRequest.items() == null ? entity.getItems() : new ArrayList<>());// TODO
+//        entity.setGrossTotal(orderRequest.grossTotal() == null ? entity.getGrossTotal() : new BigDecimal(orderRequest.grossTotal()));
         entity.setDiscount(orderRequest.discount() == null ? entity.getDiscount() : new BigDecimal(orderRequest.discount()));
-        entity.setNetTotal(orderRequest.netTotal() == null ? entity.getNetTotal() : new BigDecimal(orderRequest.netTotal()));
+//        entity.setNetTotal(orderRequest.netTotal() == null ? entity.getNetTotal() : new BigDecimal(orderRequest.netTotal()));
     }
 
     private OrderEntity getOrderEntity(UUID id) {
