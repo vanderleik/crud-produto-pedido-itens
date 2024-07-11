@@ -44,6 +44,7 @@ class OrderItemRepositoryTest {
         productRepository.save(productEntity);
 
         OrderEntity orderEntity = OrderEntity.builder()
+                .orderNumber(1L)
                 .orderDate(LocalDate.now())
                 .status(EnumOrderStatus.OPEN)
                 .items(new ArrayList<>())
