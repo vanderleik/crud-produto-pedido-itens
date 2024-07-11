@@ -1,6 +1,7 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
+import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
@@ -45,19 +46,19 @@ public class OrderServiceImpl implements OrderInputPort {
     }
 
     @Override
-    public List<OrderResponse> list() {
+    public List<OrderProjection> list() {
         log.info("list:: Listando pedidos");
         List<OrderEntity> list = getOrderEntities();
         log.info("list:: Pedidos encontrados: {}", list);
-        return list.stream().map(orderConverter::toResponse).toList();
+        return list.stream().map(orderConverter::toProjection).toList();
     }
 
     @Override
-    public OrderResponse read(UUID id) {
+    public OrderProjection read(UUID id) {
         log.info("read:: Buscando pedido por id: {}", id);
         OrderEntity entity = getOrderEntity(id);
         log.info("read:: Pedido encontrado: {}", entity);
-        return orderConverter.toResponse(entity);
+        return orderConverter.toProjection(entity);
     }
 
     @Transactional(rollbackFor = Exception.class)
