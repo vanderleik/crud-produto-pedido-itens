@@ -1,5 +1,6 @@
 package com.produtopedidoitens.api.application.mapper;
 
+import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
 import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
@@ -26,11 +27,21 @@ public class ProductConverter {
                 .id(entitySaved.getId())
                 .productName(entitySaved.getProductName())
                 .price(entitySaved.getPrice())
-                .type(entitySaved.getType())
+                .type(EnumConverter.toString(entitySaved.getType()))
                 .active(entitySaved.getActive())
                 .dthreg(entitySaved.getDthreg())
                 .dthalt(entitySaved.getDthalt())
                 .version(entitySaved.getVersion())
+                .build();
+    }
+
+    public ProductProjection toProjection(ProductEntity productEntity) {
+        return ProductProjection.builder()
+                .id(productEntity.getId())
+                .productName(productEntity.getProductName())
+                .price(productEntity.getPrice())
+                .type(EnumConverter.toString(productEntity.getType()))
+                .active(productEntity.getActive())
                 .build();
     }
 }
