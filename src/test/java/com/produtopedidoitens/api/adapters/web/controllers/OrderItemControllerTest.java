@@ -65,7 +65,7 @@ class OrderItemControllerTest {
         orderItemRequest = OrderItemRequest.builder()
                 .productId("2104a849-13c4-46f7-8e11-a7bf2504ba46")
                 .quantity(1)
-                .price(productResponse.price())
+                .orderId("e683586e-0b2d-4da7-8605-a0d9b3b307d6")
                 .build();
 
         orderItemResponse = OrderItemResponse.builder()

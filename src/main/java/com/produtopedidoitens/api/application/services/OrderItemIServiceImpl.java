@@ -1,14 +1,17 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
+import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
 import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderItemNotFoundException;
+import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
 import com.produtopedidoitens.api.application.mapper.OrderItemConverter;
 import com.produtopedidoitens.api.application.port.OrderItemInputPort;
@@ -28,14 +31,15 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
     private final OrderItemConverter orderItemConverter;
-    
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public OrderItemResponse create(OrderItemRequest orderItemRequest) {
         log.info("create:: Recebendo orderItemRequest: {}", orderItemRequest);
         try {
-            OrderItemEntity entitySaved = orderItemRepository.save(getEntity(orderItemRequest));
+            OrderItemEntity entitySaved = orderItemRepository.save(getOrderItemEntity(orderItemRequest));
             OrderItemResponse response = orderItemConverter.toResponse(entitySaved);
             log.info("create:: Salvando item do pedido: {}", response);
             return response;
@@ -122,9 +126,17 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         return list;
     }
 
-    private OrderItemEntity getEntity(OrderItemRequest orderItemRequest) {
+    private OrderItemEntity getOrderItemEntity(OrderItemRequest orderItemRequest) {
         ProductEntity productEntity = getProdutoEntity(orderItemRequest.productId());
-        return orderItemConverter.requestToEntity(orderItemRequest, productEntity);
+        OrderEntity orderEntity = getOrderEntity(orderItemRequest.orderId());//nulo?
+        return orderItemConverter.requestToEntity(orderItemRequest, productEntity, orderEntity);
+    }
+
+    private OrderEntity getOrderEntity(String orderId) {
+        return orderRepository.findById(UUID.fromString(orderId)).orElseThrow(() -> {
+            log.error("getOrderEntity:: Ocorreu um erro ao buscar o pedido por id: {}", MessagesConstants.ERROR_NOT_FOUND_ORDER);
+            return new OrderNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER);
+        });
     }
 
 }
