@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +40,9 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     public OrderItemResponse create(OrderItemRequest orderItemRequest) {
         log.info("create:: Recebendo orderItemRequest: {}", orderItemRequest);
         try {
-            OrderItemEntity entitySaved = orderItemRepository.save(getOrderItemEntity(orderItemRequest));
+            OrderItemEntity orderItemEntity = getOrderItemEntity(orderItemRequest);
+            setGrossTotal(orderItemEntity);
+            OrderItemEntity entitySaved = orderItemRepository.save(orderItemEntity);
             OrderItemResponse response = orderItemConverter.toResponse(entitySaved);
             log.info("create:: Salvando item do pedido: {}", response);
             return response;
@@ -48,6 +51,19 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
          log.error("create:: Ocorreu um erro ao salvar o item do pedido");
             throw new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER_ITEM);
         }
+    }
+
+    private static void setGrossTotal(OrderItemEntity orderItemEntity) {
+        log.info("setGrossTotal:: Calculando total bruto do pedido");
+        BigDecimal grossTotal = orderItemEntity.getOrder().getGrossTotal();
+        if (grossTotal == null) {
+            grossTotal = BigDecimal.ZERO;
+        }
+        BigDecimal price = orderItemEntity.getProduct().getPrice();
+        Integer quantity = orderItemEntity.getQuantity();
+        BigDecimal result = price.multiply(BigDecimal.valueOf(quantity));
+        log.info("setGrossTotal:: Total bruto do pedido calculado: {}", result);
+        orderItemEntity.getOrder().setGrossTotal(grossTotal.add(result));
     }
 
     @Override
@@ -128,7 +144,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
 
     private OrderItemEntity getOrderItemEntity(OrderItemRequest orderItemRequest) {
         ProductEntity productEntity = getProdutoEntity(orderItemRequest.productId());
-        OrderEntity orderEntity = getOrderEntity(orderItemRequest.orderId());//nulo?
+        OrderEntity orderEntity = getOrderEntity(orderItemRequest.orderId());
         return orderItemConverter.requestToEntity(orderItemRequest, productEntity, orderEntity);
     }
 

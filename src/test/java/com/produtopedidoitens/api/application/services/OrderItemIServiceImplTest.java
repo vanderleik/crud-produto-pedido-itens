@@ -59,6 +59,7 @@ class OrderItemIServiceImplTest {
     void setUp() {
         orderEntity = OrderEntity.builder()
                 .id(UUID.fromString("e683586e-0b2d-4da7-8605-a0d9b3b307d6"))
+                .orderNumber("PED-1-2024")
                 .orderDate(LocalDate.now())
                 .status(EnumOrderStatus.OPEN)
                 .build();
@@ -88,6 +89,7 @@ class OrderItemIServiceImplTest {
         orderItemEntity = OrderItemEntity.builder()
                 .id(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))
                 .product(productEntity)
+                .order(orderEntity)
                 .quantity(10)
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
