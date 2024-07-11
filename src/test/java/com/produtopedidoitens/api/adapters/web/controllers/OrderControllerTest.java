@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.doThrow;
@@ -113,13 +114,13 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve buscar todos os pedidos")
     void testFindAll() throws Exception {
-        when(orderInputPort.list()).thenReturn(new ArrayList<>());
+        when(orderInputPort.list()).thenReturn(List.of(orderProjection));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("[]"));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(List.of(orderProjection))));
     }
 
     @Test

@@ -1,13 +1,16 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
+import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
 import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.application.domain.enums.EnumProductType;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.mapper.OrderItemConverter;
@@ -21,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -41,15 +45,24 @@ class OrderItemIServiceImplTest {
     private ProductRepository productRepository;
     @Mock
     private OrderItemConverter orderItemConverter;
+    @Mock
+    private OrderRepository orderRepository;
 
     private ProductEntity productEntity;
     private OrderItemResponse orderItemResponse;
     private OrderItemRequest orderItemRequest;
     private OrderItemEntity orderItemEntity;
     private OrderItemProjection orderItemProjection;
+    private OrderEntity orderEntity;
 
     @BeforeEach
     void setUp() {
+        orderEntity = OrderEntity.builder()
+                .id(UUID.fromString("e683586e-0b2d-4da7-8605-a0d9b3b307d6"))
+                .orderDate(LocalDate.now())
+                .status(EnumOrderStatus.OPEN)
+                .build();
+
         productEntity = ProductEntity.builder()
                 .id(UUID.fromString("2104a849-13c4-46f7-8e11-a7bf2504ba46"))
                 .productName("Product 1")
@@ -84,7 +97,7 @@ class OrderItemIServiceImplTest {
         orderItemRequest = OrderItemRequest.builder()
                 .quantity(10)
                 .productId("2fda9391-82bf-452c-80f7-e93d9c4898df")
-                .price(BigDecimal.valueOf(100.0))
+                .orderId(String.valueOf(orderEntity.getId()))
                 .build();
 
         orderItemResponse = OrderItemResponse.builder()
@@ -108,15 +121,16 @@ class OrderItemIServiceImplTest {
     @DisplayName("Deve criar um item do pedido")
     void testCreate() {
         when(productRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.of(productEntity));
-        when(orderItemConverter.requestToEntity(orderItemRequest, productEntity)).thenReturn(orderItemEntity);
+        when(orderItemConverter.requestToEntity(orderItemRequest, productEntity, orderEntity)).thenReturn(orderItemEntity);
         when(orderItemRepository.save(orderItemEntity)).thenReturn(orderItemEntity);
+        when(orderRepository.findById(UUID.fromString(orderItemRequest.orderId()))).thenReturn(Optional.of(orderEntity));
         when(orderItemConverter.toResponse(orderItemEntity)).thenReturn(orderItemResponse);
 
         OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.create(orderItemRequest));
         assertNotNull(response);
         assertEquals(orderItemResponse, response);
         verify(productRepository).findById(UUID.fromString(orderItemRequest.productId()));
-        verify(orderItemConverter).requestToEntity(orderItemRequest, productEntity);
+        verify(orderItemConverter).requestToEntity(orderItemRequest, productEntity, orderEntity);
         verify(orderItemRepository).save(orderItemEntity);
         verify(orderItemConverter).toResponse(orderItemEntity);
     }

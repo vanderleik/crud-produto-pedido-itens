@@ -40,7 +40,7 @@ public class OrderEntity {
     @Enumerated(EnumType.STRING)
     private EnumOrderStatus status;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItemEntity> items = new ArrayList<>();
 
     @Column(name = "grosstotal")
