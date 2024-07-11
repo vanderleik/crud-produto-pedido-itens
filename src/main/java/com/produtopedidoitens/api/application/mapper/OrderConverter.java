@@ -1,5 +1,6 @@
 package com.produtopedidoitens.api.application.mapper;
 
+import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
@@ -35,6 +36,18 @@ public class OrderConverter {
                 .dthreg(entitySaved.getDthreg())
                 .dthalt(entitySaved.getDthalt())
                 .version(entitySaved.getVersion())
+                .build();
+    }
+
+    public OrderProjection toProjection(OrderEntity orderEntity) {
+        return OrderProjection.builder()
+                .id(orderEntity.getId())
+                .orderDate(orderEntity.getOrderDate())
+                .status(EnumConverter.toString(orderEntity.getStatus()))
+                .items(new ArrayList<>())//TODO: OrderItemProjection
+                .grossTotal(orderEntity.getGrossTotal())
+                .discount(orderEntity.getDiscount())
+                .netTotal(orderEntity.getNetTotal())
                 .build();
     }
 }
