@@ -9,7 +9,7 @@ import java.util.List;
 public record OrderRequest(
         LocalDate orderDate,
         String status,
-        List<String> items,
+        List<OrderItemRequest> items,
         String grossTotal,
         String discount,
         String netTotal
