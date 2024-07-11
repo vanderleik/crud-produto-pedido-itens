@@ -4,6 +4,7 @@ import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
 import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
 import org.springframework.stereotype.Component;
@@ -11,10 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderItemConverter {
 
-    public OrderItemEntity requestToEntity(OrderItemRequest orderItemRequest, ProductEntity productEntity) {
+    public OrderItemEntity requestToEntity(OrderItemRequest orderItemRequest, ProductEntity productEntity, OrderEntity orderEntity) {
         return OrderItemEntity.builder()
                 .quantity(orderItemRequest.quantity())
                 .product(productEntity)
+                .order(orderEntity)
                 .build();
     }
 
