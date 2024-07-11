@@ -1,6 +1,7 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
+import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
@@ -41,6 +42,7 @@ class OrderServiceImplTest {
     private OrderRequest orderRequest;
     private OrderResponse orderResponse;
     private OrderEntity orderEntity;
+    private OrderProjection orderProjection;
 
     @BeforeEach
     void setUp() {
@@ -64,6 +66,16 @@ class OrderServiceImplTest {
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
                 .version(0L)
+                .build();
+
+        orderProjection = OrderProjection.builder()
+                .id(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))
+                .orderDate(LocalDate.now())
+                .status("Aberto")
+                .items(new ArrayList<>())
+                .grossTotal(BigDecimal.valueOf(100.00))
+                .discount(BigDecimal.valueOf(0.00))
+                .netTotal(BigDecimal.valueOf(100.00))
                 .build();
 
         orderEntity = OrderEntity.builder()
@@ -114,19 +126,19 @@ class OrderServiceImplTest {
     @DisplayName("Deve listar pedidos")
     void testList() {
         when(orderRepository.findAll()).thenReturn(List.of(orderEntity));
-        when(orderConverter.toResponse(orderEntity)).thenReturn(orderResponse);
+        when(orderConverter.toProjection(orderEntity)).thenReturn(orderProjection);
 
-        List<OrderResponse> responseList = assertDoesNotThrow(() -> orderServiceImpl.list());
+        List<OrderProjection> responseList = assertDoesNotThrow(() -> orderServiceImpl.list());
         assertNotNull(responseList);
         assertEquals(1, responseList.size());
-        assertEquals(orderResponse.orderDate(), responseList.get(0).orderDate());
-        assertEquals(orderResponse.status(), responseList.get(0).status());
-        assertEquals(orderResponse.items(), responseList.get(0).items());
-        assertEquals(orderResponse.grossTotal(), responseList.get(0).grossTotal());
-        assertEquals(orderResponse.discount(), responseList.get(0).discount());
-        assertEquals(orderResponse.netTotal(), responseList.get(0).netTotal());
+        assertEquals(orderProjection.orderDate(), responseList.get(0).orderDate());
+        assertEquals(orderProjection.status(), responseList.get(0).status());
+        assertEquals(orderProjection.items(), responseList.get(0).items());
+        assertEquals(orderProjection.grossTotal(), responseList.get(0).grossTotal());
+        assertEquals(orderProjection.discount(), responseList.get(0).discount());
+        assertEquals(orderProjection.netTotal(), responseList.get(0).netTotal());
         verify(orderRepository).findAll();
-        verify(orderConverter).toResponse(orderEntity);
+        verify(orderConverter).toProjection(orderEntity);
     }
 
     @Test
@@ -142,18 +154,18 @@ class OrderServiceImplTest {
     @DisplayName("Deve buscar um pedido por id")
     void testRead() {
         when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
-        when(orderConverter.toResponse(orderEntity)).thenReturn(orderResponse);
+        when(orderConverter.toProjection(orderEntity)).thenReturn(orderProjection);
 
-        OrderResponse response = assertDoesNotThrow(() -> orderServiceImpl.read(orderEntity.getId()));
+        OrderProjection response = assertDoesNotThrow(() -> orderServiceImpl.read(orderEntity.getId()));
         assertNotNull(response);
-        assertEquals(orderResponse.orderDate(), response.orderDate());
-        assertEquals(orderResponse.status(), response.status());
-        assertEquals(orderResponse.items(), response.items());
-        assertEquals(orderResponse.grossTotal(), response.grossTotal());
-        assertEquals(orderResponse.discount(), response.discount());
-        assertEquals(orderResponse.netTotal(), response.netTotal());
+        assertEquals(orderProjection.orderDate(), response.orderDate());
+        assertEquals(orderProjection.status(), response.status());
+        assertEquals(orderProjection.items(), response.items());
+        assertEquals(orderProjection.grossTotal(), response.grossTotal());
+        assertEquals(orderProjection.discount(), response.discount());
+        assertEquals(orderProjection.netTotal(), response.netTotal());
         verify(orderRepository).findById(orderEntity.getId());
-        verify(orderConverter).toResponse(orderEntity);
+        verify(orderConverter).toProjection(orderEntity);
     }
 
     @Test
