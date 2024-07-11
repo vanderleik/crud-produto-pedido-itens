@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tborder (
      idorder UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-     ordernumber BIGINT NOT NULL,
+     ordernumber VARCHAR(30) NOT NULL,
      orderdate DATE NOT NULL,
      status VARCHAR(255) NOT NULL,
      grosstotal NUMERIC(19,2),

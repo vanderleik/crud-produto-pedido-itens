@@ -32,8 +32,8 @@ public class OrderEntity {
     private UUID id;
 
     @NotNull(message = MessagesConstants.ORDER_NUMBER_NOT_NULL)
-    @Column(name = "ordernumber", unique = true)
-    private Long orderNumber;
+    @Column(name = "ordernumber")
+    private String orderNumber;
 
     @NotNull(message = MessagesConstants.ORDER_DATE_NOT_NULL)
     @Column(name = "orderdate")
