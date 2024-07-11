@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class OrderRepositoryTest {
 
+    private static final String ORDER_NUMBER = "PED-81-2024";
+
     @Autowired
     private OrderRepository orderRepository;
 
@@ -28,7 +30,7 @@ class OrderRepositoryTest {
     @BeforeEach
     void setUp() {
         orderEntity = OrderEntity.builder()
-                .orderNumber(1L)
+                .orderNumber(ORDER_NUMBER)
                 .orderDate(LocalDate.now())
                 .status(EnumOrderStatus.OPEN)
                 .items(new ArrayList<>())

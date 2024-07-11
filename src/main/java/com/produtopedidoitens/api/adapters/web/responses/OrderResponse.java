@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder
 public record OrderResponse(
         UUID id,
-        Long orderNumber,
+        String orderNumber,
         LocalDate orderDate,
         String status,
 //        List<OrderItemResponse> items,

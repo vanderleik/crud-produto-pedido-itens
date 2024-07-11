@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -24,11 +25,17 @@ public class OrderConverter {
 
     public OrderEntity toEntity(OrderRequest orderRequest) {
         return OrderEntity.builder()
-                .orderNumber(orderRequest.orderNumber())
+                .orderNumber(getOrderNumber())
                 .orderDate(orderRequest.orderDate())
                 .status(EnumConverter.fromString(orderRequest.status(), EnumOrderStatus.class))
                 .discount(new BigDecimal(orderRequest.discount()))
                 .build();
+    }
+
+    private String getOrderNumber() {
+        Random random = new Random();
+        int randomNumber = random.nextInt(1001);
+        return "PED-" + randomNumber + "-2024";
     }
 
     public OrderResponse toResponse(OrderEntity entitySaved) {
