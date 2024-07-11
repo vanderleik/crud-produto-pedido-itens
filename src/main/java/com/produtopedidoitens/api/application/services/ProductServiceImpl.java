@@ -1,6 +1,7 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
+import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
 import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
@@ -44,19 +45,19 @@ public class ProductServiceImpl implements ProductInputPort {
     }
 
     @Override
-    public List<ProductResponse> list() {
+    public List<ProductProjection> list() {
         log.info("list:: Listando produtos/serviços");
         List<ProductEntity> list = getProductEntities();
         log.info("list:: Produtos/serviços listados com sucesso: {}", list);
-        return list.stream().map(productConverter::toResponse).toList();
+        return list.stream().map(productConverter::toProjection).toList();
     }
 
     @Override
-    public ProductResponse read(UUID id) {
+    public ProductProjection read(UUID id) {
         log.info("read:: Buscando produto/serviço pelo id: {}", id);
         ProductEntity entity = getProductEntity(id);
         log.info("read:: Produto/serviço encontrado: {}", entity);
-        return productConverter.toResponse(entity);
+        return productConverter.toProjection(entity);
     }
 
     @Transactional(rollbackFor = Exception.class)
