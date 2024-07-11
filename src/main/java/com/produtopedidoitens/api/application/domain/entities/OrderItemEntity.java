@@ -49,6 +49,6 @@ public class OrderItemEntity {
     private LocalDateTime dthalt;
 
     @Version
-    private Integer version;
+    private Long version;
 
 }

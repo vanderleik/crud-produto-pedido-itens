@@ -2,17 +2,14 @@ package com.produtopedidoitens.api.adapters.web.responses;
 
 import lombok.Builder;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
-public record ProductResponse(
+public record OrderItemResponse(
         UUID id,
-        String productName,
-        BigDecimal price,
-        String type,
-        Boolean active,
+        ProductResponse product,
+        Integer quantity,
         LocalDateTime dthreg,
         LocalDateTime dthalt,
         Long version

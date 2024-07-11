@@ -26,6 +26,10 @@ public class MessagesConstants {
     public static final String ORDER_ITEM_QUANTITY_NOT_NULL = "A quantidade do item do pedido não pode ser nula";
     public static final String ORDER_ITEM_QUANTITY_POSITIVE = "A quantidade do item do pedido deve ser um valor positivo";
     public static final String ORDER_ITEM_PRODUCT_NOT_NULL = "O produto não pode ser nulo";
+    public static final String ERROR_SAVE_ORDER_ITEM = "Erro ao salvar item do pedido";
+    public static final String ERROR_ORDER_ITEM_NOT_FOUND = "Nenhum item do pedido encontrado";
+    public static final String ERROR_UPDATE_ORDER_ITEM = "Erro ao atualizar item do pedido";
+    public static final String ERROR_DELETE_ORDER_ITEM = "Erro ao deletar item do pedido";
 
     private MessagesConstants() {
     }

@@ -1,6 +1,7 @@
 package com.produtopedidoitens.api.adapters.web.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.doThrow;
@@ -46,6 +48,7 @@ class OrderControllerTest {
 
     private OrderRequest orderRequest;
     private OrderResponse orderResponse;
+    private OrderProjection orderProjection;
 
     @BeforeEach
     void setUp() {
@@ -69,6 +72,16 @@ class OrderControllerTest {
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
                 .version(0L)
+                .build();
+
+        orderProjection = OrderProjection.builder()
+                .id(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))
+                .orderDate(LocalDate.now())
+                .status("Aberto")
+                .items(new ArrayList<>())
+                .grossTotal(BigDecimal.valueOf(100.00))
+                .discount(BigDecimal.valueOf(0.00))
+                .netTotal(BigDecimal.valueOf(100.00))
                 .build();
     }
 
@@ -101,13 +114,13 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve buscar todos os pedidos")
     void testFindAll() throws Exception {
-        when(orderInputPort.list()).thenReturn(new ArrayList<>());
+        when(orderInputPort.list()).thenReturn(List.of(orderProjection));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("[]"));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(List.of(orderProjection))));
     }
 
     @Test
@@ -125,13 +138,13 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve buscar um pedido pelo id")
     void testRead() throws Exception {
-        when(orderInputPort.read(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))).thenReturn(orderResponse);
+        when(orderInputPort.read(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))).thenReturn(orderProjection);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(orderResponse)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(orderProjection)));
     }
 
     @Test
