@@ -142,10 +142,10 @@ class ProductServiceImplTest {
 
         ProductProjection response = assertDoesNotThrow(() -> productServiceImpl.read(productEntity.getId()));
         assertNotNull(response);
-        assertEquals(productResponse.productName(), response.productName());
-        assertEquals(productResponse.price(), response.price());
-        assertEquals(productResponse.type(), response.type());
-        assertEquals(productResponse.active(), response.active());
+        assertEquals(productProjection.productName(), response.productName());
+        assertEquals(productProjection.price(), response.price());
+        assertEquals(productProjection.type(), response.type());
+        assertEquals(productProjection.active(), response.active());
         verify(productRepository).findById(productEntity.getId());
         verify(productConverter).toProjection(productEntity);
     }
