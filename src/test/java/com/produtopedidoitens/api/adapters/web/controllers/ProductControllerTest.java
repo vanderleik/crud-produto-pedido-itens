@@ -1,9 +1,9 @@
 package com.produtopedidoitens.api.adapters.web.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
-import com.produtopedidoitens.api.application.domain.enums.EnumProductType;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
 import com.produtopedidoitens.api.application.port.ProductInputPort;
@@ -46,6 +46,7 @@ class ProductControllerTest {
 
     private ProductRequest productRequest;
     private ProductResponse productResponse;
+    private ProductProjection productProjection;
 
     @BeforeEach
     void setUp() {
@@ -60,11 +61,19 @@ class ProductControllerTest {
                 .id(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"))
                 .productName("Product 1")
                 .price(BigDecimal.valueOf(100.0))
-                .type(EnumProductType.PRODUCT)
+                .type("Produto")
                 .active(true)
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
                 .version(0L)
+                .build();
+
+        productProjection = ProductProjection.builder()
+                .id(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"))
+                .productName("Product 1")
+                .price(BigDecimal.valueOf(100.0))
+                .type("Produto")
+                .active(true)
                 .build();
     }
 
@@ -97,13 +106,13 @@ class ProductControllerTest {
     @Test
     @DisplayName("Deve listar todos os produtos")
     void testList() throws Exception {
-        when(productInputPort.list()).thenReturn(List.of(productResponse));
+        when(productInputPort.list()).thenReturn(List.of(productProjection));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(List.of(productResponse))));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(List.of(productProjection))));
     }
 
     @Test
@@ -121,13 +130,13 @@ class ProductControllerTest {
     @Test
     @DisplayName("Deve buscar um produto pelo id")
     void testRead() throws Exception {
-        when(productInputPort.read(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"))).thenReturn(productResponse);
+        when(productInputPort.read(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"))).thenReturn(productProjection);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(productResponse)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(productProjection)));
     }
 
     @Test

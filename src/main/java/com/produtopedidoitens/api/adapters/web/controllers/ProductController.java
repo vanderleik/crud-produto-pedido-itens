@@ -1,5 +1,6 @@
 package com.produtopedidoitens.api.adapters.web.controllers;
 
+import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
 import com.produtopedidoitens.api.application.port.ProductInputPort;
@@ -27,13 +28,13 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> listAll() {
+    public ResponseEntity<List<ProductProjection>> listAll() {
         log.info("listAll:: Recebendo requisição para listar todos os produtos");
         return ResponseEntity.ok(productInputPort.list());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> read(@PathVariable String id) {
+    public ResponseEntity<ProductProjection> read(@PathVariable String id) {
         log.info("read:: Recebendo requisição para buscar um produto pelo id: {}", id);
         return ResponseEntity.ok(productInputPort.read(UUID.fromString(id)));
     }
