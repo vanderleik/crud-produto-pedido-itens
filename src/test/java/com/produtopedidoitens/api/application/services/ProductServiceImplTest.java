@@ -1,6 +1,7 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
+import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
 import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
@@ -36,9 +37,9 @@ class ProductServiceImplTest {
     @Mock
     private ProductConverter productConverter;
 
-
     private ProductRequest productRequest;
     private ProductResponse productResponse;
+    private ProductProjection productProjection;
     private ProductEntity productEntity;
 
     @BeforeEach
@@ -54,11 +55,19 @@ class ProductServiceImplTest {
                 .id(UUID.fromString("f47b3b2b-3b1b-4b3b-8b3b-3b1b3b1b3b1b"))
                 .productName("Product")
                 .price(BigDecimal.valueOf(100.00))
-                .type(EnumProductType.PRODUCT)
+                .type("Produto")
                 .active(true)
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
                 .version(0L)
+                .build();
+
+        productProjection = ProductProjection.builder()
+                .id(UUID.fromString("f47b3b2b-3b1b-4b3b-8b3b-3b1b3b1b3b1b"))
+                .productName("Product")
+                .price(BigDecimal.valueOf(100.00))
+                .type("Produto")
+                .active(true)
                 .build();
 
         productEntity = ProductEntity.builder()
@@ -105,15 +114,15 @@ class ProductServiceImplTest {
     @DisplayName("Deve listar todos os produtos salvos")
     void testListSuccess() {
         when(productRepository.findAll()).thenReturn(List.of(productEntity));
-        when(productConverter.toResponse(productEntity)).thenReturn(productResponse);
+        when(productConverter.toProjection(productEntity)).thenReturn(productProjection);
 
-        List<ProductResponse> responseList = assertDoesNotThrow(() -> productServiceImpl.list());
+        List<ProductProjection> responseList = assertDoesNotThrow(() -> productServiceImpl.list());
 
         assertNotNull(responseList);
         assertFalse(responseList.isEmpty());
         assertEquals(1, responseList.size());
         verify(productRepository).findAll();
-        verify(productConverter).toResponse(productEntity);
+        verify(productConverter).toProjection(productEntity);
     }
 
     @Test
@@ -129,16 +138,16 @@ class ProductServiceImplTest {
     @DisplayName("Deve retornar um produto pelo id")
     void testReadSuccess() {
         when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
-        when(productConverter.toResponse(productEntity)).thenReturn(productResponse);
+        when(productConverter.toProjection(productEntity)).thenReturn(productProjection);
 
-        ProductResponse response = assertDoesNotThrow(() -> productServiceImpl.read(productEntity.getId()));
+        ProductProjection response = assertDoesNotThrow(() -> productServiceImpl.read(productEntity.getId()));
         assertNotNull(response);
-        assertEquals(productResponse.productName(), response.productName());
-        assertEquals(productResponse.price(), response.price());
-        assertEquals(productResponse.type(), response.type());
-        assertEquals(productResponse.active(), response.active());
+        assertEquals(productProjection.productName(), response.productName());
+        assertEquals(productProjection.price(), response.price());
+        assertEquals(productProjection.type(), response.type());
+        assertEquals(productProjection.active(), response.active());
         verify(productRepository).findById(productEntity.getId());
-        verify(productConverter).toResponse(productEntity);
+        verify(productConverter).toProjection(productEntity);
     }
 
     @Test
