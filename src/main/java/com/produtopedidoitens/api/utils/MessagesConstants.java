@@ -21,6 +21,7 @@ public class MessagesConstants {
     public static final String ERROR_NOT_FOUND_ORDER = "Nenhum pedido encontrado";
     public static final String ERROR_UPDATE_ORDER = "Erro ao atualizar pedido";
     public static final String ERROR_DELETE_ORDER = "Erro ao deletar pedido";
+    public static final String ORDER_NUMBER_NOT_NULL = "O número do pedido não pode ser nulo";
 
     //ORDER ITEM
     public static final String ORDER_ITEM_QUANTITY_NOT_NULL = "A quantidade do item do pedido não pode ser nula";

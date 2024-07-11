@@ -5,18 +5,18 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Builder
 public record OrderResponse(
         UUID id,
+        Long orderNumber,
         LocalDate orderDate,
         String status,
-        List<OrderItemResponse> items,
-        BigDecimal grossTotal,
+//        List<OrderItemResponse> items,
+//        BigDecimal grossTotal,
         BigDecimal discount,
-        BigDecimal netTotal,
+//        BigDecimal netTotal,
         LocalDateTime dthreg,
         LocalDateTime dthalt,
         Long version
