@@ -9,6 +9,7 @@ import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
 import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumProductType;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderItemNotFoundException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
@@ -42,6 +43,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         try {
             OrderItemEntity orderItemEntity = getOrderItemEntity(orderItemRequest);
             setGrossTotal(orderItemEntity);
+            setNetTotal(orderItemEntity);
             OrderItemEntity entitySaved = orderItemRepository.save(orderItemEntity);
             OrderItemResponse response = orderItemConverter.toResponse(entitySaved);
             log.info("create:: Salvando item do pedido: {}", response);
@@ -51,6 +53,49 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
          log.error("create:: Ocorreu um erro ao salvar o item do pedido");
             throw new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER_ITEM);
         }
+    }
+
+    private void setNetTotal(OrderItemEntity orderItemEntity) {
+        log.info("setNetTotal:: Calculando total líquido do pedido");
+        BigDecimal grossTotalOrder = orderItemEntity.getOrder().getGrossTotal();
+        BigDecimal grossTotalProduct = BigDecimal.ZERO;
+        BigDecimal discount = BigDecimal.ZERO;
+
+        if (orderItemEntity.getOrder().getDiscount().compareTo(BigDecimal.ZERO) > 0
+                && orderItemEntity.getOrder().getDiscount().compareTo(BigDecimal.valueOf(100)) <= 0) {
+            discount = orderItemEntity.getOrder().getDiscount().divide(BigDecimal.valueOf(100));
+        }
+
+        List<OrderItemEntity> items = orderItemEntity.getOrder().getItems();
+
+        log.info("setNetTotal:: Calculando total bruto dos produtos");
+        for (OrderItemEntity item : items) {
+            if (EnumProductType.PRODUCT == item.getProduct().getType()) {
+                BigDecimal price = item.getProduct().getPrice();
+                Integer quantity = item.getQuantity();
+                BigDecimal totalProduct = price.multiply(BigDecimal.valueOf(quantity));
+                grossTotalProduct = grossTotalProduct.add(totalProduct);
+            }
+        }
+
+        log.info("setNetTotal:: Total bruto do pedido calculado: {}", grossTotalOrder);
+        log.info("setNetTotal:: Total bruto do produto calculado: {}", grossTotalProduct);
+        log.info("setNetTotal:: Desconto a ser concedido sobre o total de produtos: {}", discount);
+        BigDecimal grossTotalService = grossTotalOrder.subtract(grossTotalProduct);
+        log.info("setNetTotal:: Total bruto dos serviços calculado: {}", grossTotalService);
+
+        BigDecimal discountAmount = grossTotalProduct.multiply(discount);
+        log.info("setNetTotal:: Valor de desconto calculado: {}", discountAmount);
+
+        BigDecimal netTotalProduct = grossTotalProduct.subtract(discountAmount);
+        log.info("setNetTotal:: Total líquido do produto calculado: {}", netTotalProduct);
+
+        BigDecimal netTotalOrder = netTotalProduct.add(grossTotalOrder.subtract(grossTotalProduct));
+        log.info("setNetTotal:: Total líquido do pedido calculado: {}", netTotalOrder);
+        BigDecimal netTotalOrder2 = netTotalProduct.add(grossTotalService);
+        log.info("setNetTotal:: Total líquido do pedido calculado 2: {}", netTotalOrder2);
+
+        orderItemEntity.getOrder().setNetTotal(netTotalOrder);
     }
 
     private static void setGrossTotal(OrderItemEntity orderItemEntity) {

@@ -16,12 +16,13 @@ public class MessagesConstants {
     //ORDER
     public static final String ORDER_DATE_NOT_NULL = "A data do pedido não pode ser nula";
     public static final String ORDER_DATE_STATUS_NOT_NULL = "O status do pedido não pode ser nulo";
-    public static final String ORDER_DISCOUNT_POSITIVE = "O desconto do pedido deve ser um valor positivo";
     public static final String ERROR_SAVE_ORDER = "Erro ao salvar pedido";
     public static final String ERROR_NOT_FOUND_ORDER = "Nenhum pedido encontrado";
     public static final String ERROR_UPDATE_ORDER = "Erro ao atualizar pedido";
     public static final String ERROR_DELETE_ORDER = "Erro ao deletar pedido";
     public static final String ORDER_NUMBER_NOT_NULL = "O número do pedido não pode ser nulo";
+    public static final String ORDER_DISCOUNT_MIN = "O desconto do pedido deve ser maior que zero";
+    public static final String ORDER_DISCOUNT_MAX = "O desconto do pedido deve ser menor ou igual a 100";
 
     //ORDER ITEM
     public static final String ORDER_ITEM_QUANTITY_NOT_NULL = "A quantidade do item do pedido não pode ser nula";
