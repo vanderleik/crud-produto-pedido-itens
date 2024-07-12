@@ -7,10 +7,11 @@ import com.produtopedidoitens.api.application.port.ProductInputPort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -28,9 +29,9 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductProjection>> listAll() {
+    public ResponseEntity<Page<ProductProjection>> listAll(Pageable pageable) {
         log.info("listAll:: Recebendo requisição para listar todos os produtos");
-        return ResponseEntity.ok(productInputPort.list());
+        return ResponseEntity.ok(productInputPort.list(pageable));
     }
 
     @GetMapping("/{id}")

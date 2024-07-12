@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -119,15 +121,15 @@ class OrderServiceImplTest {
         when(orderRepository.findAll()).thenReturn(List.of(orderEntity));
         when(orderConverter.toProjection(orderEntity)).thenReturn(orderProjection);
 
-        List<OrderProjection> responseList = assertDoesNotThrow(() -> orderServiceImpl.list());
+        Page<OrderProjection> responseList = assertDoesNotThrow(() -> orderServiceImpl.list(PageRequest.of(0, 10)));
         assertNotNull(responseList);
-        assertEquals(1, responseList.size());
-        assertEquals(orderProjection.orderDate(), responseList.get(0).orderDate());
-        assertEquals(orderProjection.status(), responseList.get(0).status());
-        assertEquals(orderProjection.items(), responseList.get(0).items());
-        assertEquals(orderProjection.grossTotal(), responseList.get(0).grossTotal());
-        assertEquals(orderProjection.discount(), responseList.get(0).discount());
-        assertEquals(orderProjection.netTotal(), responseList.get(0).netTotal());
+        assertEquals(1, responseList.toList().size());
+        assertEquals(orderProjection.orderDate(), responseList.toList().get(0).orderDate());
+        assertEquals(orderProjection.status(), responseList.toList().get(0).status());
+        assertEquals(orderProjection.items(), responseList.toList().get(0).items());
+        assertEquals(orderProjection.grossTotal(), responseList.toList().get(0).grossTotal());
+        assertEquals(orderProjection.discount(), responseList.toList().get(0).discount());
+        assertEquals(orderProjection.netTotal(), responseList.toList().get(0).netTotal());
         verify(orderRepository).findAll();
         verify(orderConverter).toProjection(orderEntity);
     }
@@ -137,7 +139,7 @@ class OrderServiceImplTest {
     void testListError() {
         when(orderRepository.findAll()).thenReturn(new ArrayList<>());
 
-        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.list());
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.list(PageRequest.of(0, 10)));
         assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
     }
 

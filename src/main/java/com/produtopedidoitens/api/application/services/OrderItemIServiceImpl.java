@@ -21,6 +21,9 @@ import com.produtopedidoitens.api.application.port.OrderItemInputPort;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,11 +63,12 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     }
 
     @Override
-    public List<OrderItemProjection> list() {
+    public Page<OrderItemProjection> list(Pageable pageable) {
         log.info("list:: Listando itens do pedido");
         List<OrderItemEntity> list = getOrderItemEntities();
         log.info("list:: Itens do pedido encontrados: {}", list);
-        return list.stream().map(orderItemConverter::toProjection).toList();
+        List<OrderItemProjection> orderItemProjectionList = list.stream().map(orderItemConverter::toProjection).toList();
+        return new PageImpl<>(orderItemProjectionList, pageable, orderItemProjectionList.size());
     }
 
     @Override
@@ -76,7 +80,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     }
 
     @Override
-    public List<OrderByOrderNumber> getOrdersByOrderNumber(String orderNumber) {
+    public Page<OrderByOrderNumber> getOrdersByOrderNumber(String orderNumber) {
         log.info("getOrdersByOrderNumber:: Buscando itens do pedido pelo número do pedido: {}", orderNumber);
         List<OrderByOrderNumber> ordersByOrderNumber = orderItemRepository.findOrdersByOrderNumber(orderNumber);
         if (ordersByOrderNumber.isEmpty()) {
@@ -84,7 +88,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
             throw new OrderItemNotFoundException(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND_BY_ORDER_NUMBER);
         }
         log.info("getOrdersByOrderNumber:: Itens do pedido encontrados pelo número do pedido: {}", ordersByOrderNumber);
-        return ordersByOrderNumber;
+        return new PageImpl<>(ordersByOrderNumber, Pageable.unpaged(), ordersByOrderNumber.size());
     }
 
     @Transactional(rollbackFor = Exception.class)

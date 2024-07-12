@@ -23,6 +23,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -165,10 +167,11 @@ class OrderItemIServiceImplTest {
         when(orderItemRepository.findAll()).thenReturn(List.of(orderItemEntity));
         when(orderItemConverter.toProjection(orderItemEntity)).thenReturn(orderItemProjection);
 
-        List<OrderItemProjection> response = assertDoesNotThrow(() -> orderItemIServiceImpl.list());
+        Page<OrderItemProjection> response = assertDoesNotThrow(() -> orderItemIServiceImpl.list(PageRequest.of(0, 10)));
         assertNotNull(response);
-        assertEquals(1, response.size());
-        assertEquals(orderItemProjection, response.get(0));
+        assertFalse(response.toList().isEmpty());
+        assertEquals(1, response.toList().size());
+        assertEquals(orderItemProjection, response.toList().get(0));
         verify(orderItemRepository).findAll();
         verify(orderItemConverter).toProjection(orderItemEntity);
     }
@@ -178,7 +181,7 @@ class OrderItemIServiceImplTest {
     void testListError() {
         when(orderItemRepository.findAll()).thenReturn(List.of());
 
-        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.list());
+        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.list(PageRequest.of(0, 10)));
         assertEquals(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND, exception.getMessage());
     }
 

@@ -15,6 +15,9 @@ import com.produtopedidoitens.api.application.port.ProductInputPort;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,11 +50,12 @@ public class ProductServiceImpl implements ProductInputPort {
     }
 
     @Override
-    public List<ProductProjection> list() {
+    public Page<ProductProjection> list(Pageable pageable) {
         log.info("list:: Listando produtos/serviços");
         List<ProductEntity> list = getProductEntities();
         log.info("list:: Produtos/serviços listados com sucesso: {}", list);
-        return list.stream().map(productConverter::toProjection).toList();
+        List<ProductProjection> productProjectionList = list.stream().map(productConverter::toProjection).toList();
+        return new PageImpl<>(productProjectionList, pageable, list.size());
     }
 
     @Override

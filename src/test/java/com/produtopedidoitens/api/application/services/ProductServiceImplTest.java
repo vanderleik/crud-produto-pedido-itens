@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -119,11 +121,11 @@ class ProductServiceImplTest {
         when(productRepository.findAll()).thenReturn(List.of(productEntity));
         when(productConverter.toProjection(productEntity)).thenReturn(productProjection);
 
-        List<ProductProjection> responseList = assertDoesNotThrow(() -> productServiceImpl.list());
+        Page<ProductProjection> responseList = assertDoesNotThrow(() -> productServiceImpl.list(PageRequest.of(0, 10)));
 
         assertNotNull(responseList);
         assertFalse(responseList.isEmpty());
-        assertEquals(1, responseList.size());
+        assertEquals(1, responseList.toList().size());
         verify(productRepository).findAll();
         verify(productConverter).toProjection(productEntity);
     }
@@ -133,7 +135,7 @@ class ProductServiceImplTest {
     void testListError() {
         when(productRepository.findAll()).thenReturn(List.of());
 
-        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.list());
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.list(PageRequest.of(0, 10)));
         assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
     }
 

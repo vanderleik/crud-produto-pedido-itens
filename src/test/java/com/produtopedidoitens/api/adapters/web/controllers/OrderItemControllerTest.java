@@ -15,6 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -114,19 +118,24 @@ class OrderItemControllerTest {
     @Test
     @DisplayName("Deve listar todos os itens de pedido")
     void testListAll() throws Exception {
-        when(orderItemInputPort.list()).thenReturn(List.of(orderItemProjection));
+        Pageable pageable = PageRequest.of(0, 10);
+        List<OrderItemProjection> orderItemProjectionList = List.of(orderItemProjection);
+        Page<OrderItemProjection> projectionPage = new PageImpl<>(orderItemProjectionList, pageable, orderItemProjectionList.size());
+
+        when(orderItemInputPort.list(pageable)).thenReturn(projectionPage);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(List.of(orderItemProjection))));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(projectionPage)));
     }
 
     @Test
     @DisplayName("Deve retornar erro ao listar todos os itens de pedido")
     void testListAllError() throws Exception {
-        when(orderItemInputPort.list()).thenThrow(new OrderNotFoundException(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND));
+        when(orderItemInputPort.list(PageRequest.of(0, 10)))
+                .thenThrow(new OrderNotFoundException(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
