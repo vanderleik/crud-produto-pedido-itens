@@ -33,6 +33,8 @@ public class MessagesConstants {
     public static final String ERROR_UPDATE_ORDER_ITEM = "Erro ao atualizar item do pedido";
     public static final String ERROR_DELETE_ORDER_ITEM = "Erro ao deletar item do pedido";
 
+    public static final String ERROR_PRODUCT_ASSOCIATED_ORDER_ITEM = "O produto/serviço não pode ser deletado pois está associado a um item de pedido";
+
     private MessagesConstants() {
     }
 
