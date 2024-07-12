@@ -40,6 +40,15 @@ public class OrderController {
         return ResponseEntity.ok(orderInputPort.read(UUID.fromString(id)));
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<Page<OrderProjection>> getItemsWithFilters(@RequestParam(required = false) String orderNumber,
+                                                                       @RequestParam(required = false) String status,
+                                                                       Pageable pageable) {
+        log.info("getItemsWithFilters:: Recebendo requisição para buscar orderns com filtros");
+        Page<OrderProjection> orders = orderInputPort.getItemsWithFilters(orderNumber, status, pageable);
+        return ResponseEntity.ok(orders);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponse> update(@PathVariable String id, @Valid @RequestBody OrderRequest orderRequest) {
         log.info("update:: Recebendo requisição para atualizar um pedido com os dados: {}", orderRequest);

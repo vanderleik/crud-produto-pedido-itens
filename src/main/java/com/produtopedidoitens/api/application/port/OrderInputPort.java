@@ -15,5 +15,6 @@ public interface OrderInputPort {
     OrderProjection read(UUID id);
     OrderResponse update(UUID id, OrderRequest orderRequest);
     void delete(UUID id);
+    Page<OrderProjection> getItemsWithFilters(String orderNumber, String status, Pageable pageable);
 
 }

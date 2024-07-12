@@ -1,6 +1,7 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
+import com.produtopedidoitens.api.adapters.web.filters.OrderFilter;
 import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,6 +97,24 @@ public class OrderServiceImpl implements OrderInputPort {
             log.error("delete:: Ocorreu um erro ao deletar pedido");
             throw new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER);
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Page<OrderProjection> getItemsWithFilters(String orderNumber, String status, Pageable pageable) {
+        log.info("getItemsWithFilters:: Recebendo requisição para buscar pedidos com filtros");
+        Specification<OrderEntity> specification = OrderFilter.filterByCriteria(orderNumber, status);
+        Page<OrderEntity> orderPage = orderRepository.findAll(specification, pageable);
+        return orderPage.map(order -> new OrderProjection(
+                order.getId(),
+                order.getOrderNumber(),
+                order.getOrderDate(),
+                order.getStatus().toString(),
+                null, //TODO order.getItems(),
+                order.getGrossTotal(),
+                order.getDiscount(),
+                order.getNetTotal()
+        ));
     }
 
     private static void updateEntity(OrderEntity entity, OrderRequest orderRequest) {
