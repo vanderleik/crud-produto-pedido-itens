@@ -47,7 +47,6 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         log.info("create:: Recebendo orderItemRequest: {}", orderItemRequest);
         try {
             OrderItemEntity orderItemEntity = getOrderItemEntity(orderItemRequest);
-
             setGrossTotal(orderItemEntity);
             setNetTotal(orderItemRequest, orderItemEntity);
 
@@ -217,6 +216,10 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
 
     private OrderItemEntity getOrderItemEntity(OrderItemRequest orderItemRequest) {
         ProductEntity productEntity = getProdutoEntity(orderItemRequest.productId());
+        if (Boolean.FALSE.equals(productEntity.getActive())) {
+            log.error("getOrderItemEntity:: O produto/serviço não está ativo: {}", MessagesConstants.ERROR_PRODUCT_NOT_ACTIVE);
+            throw new BadRequestException(MessagesConstants.ERROR_PRODUCT_NOT_ACTIVE);
+        }
         OrderEntity orderEntity = getOrderEntity(orderItemRequest.orderId());
         return orderItemConverter.requestToEntity(orderItemRequest, productEntity, orderEntity);
     }
