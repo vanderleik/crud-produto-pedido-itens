@@ -3,6 +3,7 @@ package com.produtopedidoitens.api.application.services;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
+import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
@@ -72,6 +73,18 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         OrderItemEntity entity = getOrderItemEntity(id);
         log.info("read:: Item do pedido encontrado: {}", entity);
         return orderItemConverter.toProjection(entity);
+    }
+
+    @Override
+    public List<OrderByOrderNumber> getOrdersByOrderNumber(String orderNumber) {
+        log.info("getOrdersByOrderNumber:: Buscando itens do pedido pelo número do pedido: {}", orderNumber);
+        List<OrderByOrderNumber> ordersByOrderNumber = orderItemRepository.findOrdersByOrderNumber(orderNumber);
+        if (ordersByOrderNumber.isEmpty()) {
+            log.error("getOrdersByOrderNumber:: Nenhum item do pedido encontrado pelo número do pedido: {}", orderNumber);
+            throw new OrderItemNotFoundException(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND_BY_ORDER_NUMBER);
+        }
+        log.info("getOrdersByOrderNumber:: Itens do pedido encontrados pelo número do pedido: {}", ordersByOrderNumber);
+        return ordersByOrderNumber;
     }
 
     @Transactional(rollbackFor = Exception.class)

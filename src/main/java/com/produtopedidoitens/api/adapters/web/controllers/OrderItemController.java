@@ -1,5 +1,6 @@
 package com.produtopedidoitens.api.adapters.web.controllers;
 
+import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
@@ -37,6 +38,12 @@ public class OrderItemController {
     public ResponseEntity<OrderItemProjection> read(@PathVariable String id) {
         log.info("read:: Recebendo requisição para buscar um item de pedido pelo id: {}", id);
         return ResponseEntity.ok(orderItemInputPort.read(UUID.fromString(id)));
+    }
+
+    @GetMapping("/order/{orderNumber}")
+    public ResponseEntity<List<OrderByOrderNumber>> getOrdersByOrderNumber(@PathVariable String orderNumber) {
+        log.info("getOrdersByOrderNumber:: Recebendo requisição para buscar itens de pedido pelo número do pedido: {}", orderNumber);
+        return ResponseEntity.ok(orderItemInputPort.getOrdersByOrderNumber(orderNumber));
     }
 
     @PutMapping("/{id}")

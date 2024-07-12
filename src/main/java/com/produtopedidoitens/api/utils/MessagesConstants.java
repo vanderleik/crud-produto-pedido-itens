@@ -34,6 +34,7 @@ public class MessagesConstants {
     public static final String ERROR_DELETE_ORDER_ITEM = "Erro ao deletar item do pedido";
 
     public static final String ERROR_PRODUCT_ASSOCIATED_ORDER_ITEM = "O produto/serviço não pode ser deletado pois está associado a um item de pedido";
+    public static final String ERROR_ORDER_ITEM_NOT_FOUND_BY_ORDER_NUMBER = "Nenhum item de pedido encontrado para o número do pedido informado";
 
     private MessagesConstants() {
     }
