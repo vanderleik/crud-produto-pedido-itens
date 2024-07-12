@@ -6,6 +6,7 @@ import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
+import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
 import com.produtopedidoitens.api.application.port.OrderInputPort;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -108,19 +113,24 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve buscar todos os pedidos")
     void testFindAll() throws Exception {
-        when(orderInputPort.list()).thenReturn(List.of(orderProjection));
+        Pageable pageable = PageRequest.of(0, 10);
+        List<OrderProjection> orderProjectionList = List.of(orderProjection);
+        Page<OrderProjection> projectionPage = new PageImpl<>(orderProjectionList, pageable, orderProjectionList.size());
+
+        when(orderInputPort.list(pageable)).thenReturn(projectionPage);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(List.of(orderProjection))));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(projectionPage)));
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao buscar todos os pedidos")
     void testFindAllError() throws Exception {
-        when(orderInputPort.list()).thenThrow(new OrderNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER));
+        when(orderInputPort.list(PageRequest.of(0, 10)))
+                .thenThrow(new ProductNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))

@@ -7,10 +7,11 @@ import com.produtopedidoitens.api.application.port.OrderInputPort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -28,9 +29,9 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderProjection>> findAll() {
+    public ResponseEntity<Page<OrderProjection>> findAll(Pageable pageable) {
         log.info("findAll:: Recebendo requisição para buscar todos os pedidos");
-        return ResponseEntity.ok(orderInputPort.list());
+        return ResponseEntity.ok(orderInputPort.list(pageable));
     }
 
     @GetMapping("/{id}")

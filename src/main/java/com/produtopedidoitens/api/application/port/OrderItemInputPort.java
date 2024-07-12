@@ -4,16 +4,17 @@ import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface OrderItemInputPort {
 
     OrderItemResponse create(OrderItemRequest orderItemRequest);
-    List<OrderItemProjection> list();
+    Page<OrderItemProjection> list(Pageable pageable);
     OrderItemProjection read(UUID id);
-    List<OrderByOrderNumber> getOrdersByOrderNumber(String orderNumber);
+    Page<OrderByOrderNumber> getOrdersByOrderNumber(String orderNumber);
     OrderItemResponse update(UUID id, OrderItemRequest orderItemRequest);
     void delete(UUID id);
 

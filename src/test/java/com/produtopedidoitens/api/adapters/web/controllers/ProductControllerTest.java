@@ -14,6 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -106,19 +110,24 @@ class ProductControllerTest {
     @Test
     @DisplayName("Deve listar todos os produtos")
     void testList() throws Exception {
-        when(productInputPort.list()).thenReturn(List.of(productProjection));
+        Pageable pageable = PageRequest.of(0, 10);
+        List<ProductProjection> productProjectionList = List.of(productProjection);
+        Page<ProductProjection> projectionPage = new PageImpl<>(productProjectionList, pageable, productProjectionList.size());
+
+        when(productInputPort.list(pageable)).thenReturn(projectionPage);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(List.of(productProjection))));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(projectionPage)));
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao listar todos os produtos")
     void testListError() throws Exception {
-        when(productInputPort.list()).thenThrow(new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND));
+        when(productInputPort.list(PageRequest.of(0, 10)))
+                .thenThrow(new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))

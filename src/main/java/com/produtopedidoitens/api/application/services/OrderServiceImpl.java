@@ -14,6 +14,9 @@ import com.produtopedidoitens.api.application.port.OrderInputPort;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,13 +48,13 @@ public class OrderServiceImpl implements OrderInputPort {
     }
 
     @Override
-    public List<OrderProjection> list() {
+    public Page<OrderProjection> list(Pageable pageable) {
         log.info("list:: Listando pedidos");
         List<OrderEntity> list = getOrderEntities();
         List<OrderProjection> orderProjectionList = list.stream().map(orderConverter::toProjection).toList();
         log.info("list:: Pedidos encontrados: {}", orderProjectionList);
 
-        return orderProjectionList;
+        return new PageImpl<>(orderProjectionList, pageable, orderProjectionList.size());
     }
 
     @Override

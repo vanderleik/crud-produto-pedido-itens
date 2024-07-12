@@ -8,10 +8,11 @@ import com.produtopedidoitens.api.application.port.OrderItemInputPort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -29,9 +30,9 @@ public class OrderItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderItemProjection>> listAll() {
+    public ResponseEntity<Page<OrderItemProjection>> listAll(Pageable pageable) {
         log.info("listAll:: Recebendo requisição para listar todos os itens de pedido");
-        return ResponseEntity.ok(orderItemInputPort.list());
+        return ResponseEntity.ok(orderItemInputPort.list(pageable));
     }
 
     @GetMapping("/{id}")
@@ -41,7 +42,7 @@ public class OrderItemController {
     }
 
     @GetMapping("/order/{orderNumber}")
-    public ResponseEntity<List<OrderByOrderNumber>> getOrdersByOrderNumber(@PathVariable String orderNumber) {
+    public ResponseEntity<Page<OrderByOrderNumber>> getOrdersByOrderNumber(@PathVariable String orderNumber) {
         log.info("getOrdersByOrderNumber:: Recebendo requisição para buscar itens de pedido pelo número do pedido: {}", orderNumber);
         return ResponseEntity.ok(orderItemInputPort.getOrdersByOrderNumber(orderNumber));
     }
