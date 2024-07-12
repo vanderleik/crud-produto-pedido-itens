@@ -144,7 +144,7 @@ class OrderItemIServiceImplTest {
         OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.create(orderItemRequest));
         assertNotNull(response);
         assertEquals(orderItemResponse, response);
-        verify(productRepository).findById(UUID.fromString(orderItemRequest.productId()));
+        verify(productRepository, times(2)).findById(UUID.fromString(orderItemRequest.productId()));
         verify(orderItemConverter).requestToEntity(orderItemRequest, productEntity, orderEntity);
         verify(orderItemRepository).save(orderItemEntity);
         verify(orderItemConverter).toResponse(orderItemEntity);

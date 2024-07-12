@@ -39,7 +39,7 @@ public class ProductEntity {
     @Positive(message = MessagesConstants.PRODUCT_PRICE_POSITIVE)
     @Positive
     @Column(name = "price")
-    private BigDecimal price;
+    private BigDecimal price = BigDecimal.ZERO;
 
     @NotNull(message = MessagesConstants.PRODUCT_TYPE_NOT_NULL)
     @Enumerated(EnumType.STRING)
