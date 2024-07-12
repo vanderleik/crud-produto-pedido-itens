@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -59,7 +60,20 @@ class OrderItemIServiceImplTest {
     void setUp() {
         orderEntity = OrderEntity.builder()
                 .id(UUID.fromString("e683586e-0b2d-4da7-8605-a0d9b3b307d6"))
+                .orderNumber("PED-1-2024")
                 .orderDate(LocalDate.now())
+                .items(List.of(
+                        OrderItemEntity.builder()
+                                .id(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))
+                                .product(Mockito.mock(ProductEntity.class))
+                                .order(Mockito.mock(OrderEntity.class))
+                                .quantity(10)
+                                .dthreg(LocalDateTime.now())
+                                .dthalt(LocalDateTime.now())
+                                .version(0L)
+                                .build()
+                ))
+                .discount(BigDecimal.TEN)
                 .status(EnumOrderStatus.OPEN)
                 .build();
 
@@ -88,6 +102,7 @@ class OrderItemIServiceImplTest {
         orderItemEntity = OrderItemEntity.builder()
                 .id(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))
                 .product(productEntity)
+                .order(orderEntity)
                 .quantity(10)
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
@@ -129,7 +144,7 @@ class OrderItemIServiceImplTest {
         OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.create(orderItemRequest));
         assertNotNull(response);
         assertEquals(orderItemResponse, response);
-        verify(productRepository).findById(UUID.fromString(orderItemRequest.productId()));
+        verify(productRepository, times(2)).findById(UUID.fromString(orderItemRequest.productId()));
         verify(orderItemConverter).requestToEntity(orderItemRequest, productEntity, orderEntity);
         verify(orderItemRepository).save(orderItemEntity);
         verify(orderItemConverter).toResponse(orderItemEntity);

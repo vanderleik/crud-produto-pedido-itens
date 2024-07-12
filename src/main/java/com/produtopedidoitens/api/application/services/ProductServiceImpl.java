@@ -1,5 +1,6 @@
 package com.produtopedidoitens.api.application.services;
 
+import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
 import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
@@ -28,6 +29,7 @@ public class ProductServiceImpl implements ProductInputPort {
 
     private final ProductRepository productRepository;
     private final ProductConverter productConverter;
+    private final OrderItemRepository orderItemRepository;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -82,12 +84,21 @@ public class ProductServiceImpl implements ProductInputPort {
     public void delete(UUID id) {
         log.info("delete:: Recebendo requisição para deletar produto/serviço pelo id: {}", id);
         ProductEntity entity = getProductEntity(id);
+        beforeDelete(entity);
+
         try {
             productRepository.delete(entity);
             log.info("delete:: Deletando produto/serviço da base: {}", entity);
         } catch (Exception e) {
             log.error("delete:: Ocorreu um erro ao deletar o produto/serviço");
             throw new BadRequestException(MessagesConstants.ERROR_DELETE_PRODUCT);
+        }
+    }
+
+    private void beforeDelete(ProductEntity product) {
+        if (orderItemRepository.existsByProductId(product.getId())) {
+            log.error("beforeDelete:: O produto/serviço não pode ser deletado pois está associado a um item de pedido");
+            throw new BadRequestException(MessagesConstants.ERROR_PRODUCT_ASSOCIATED_ORDER_ITEM);
         }
     }
 

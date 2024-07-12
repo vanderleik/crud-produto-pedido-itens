@@ -3,8 +3,9 @@ package com.produtopedidoitens.api.application.domain.entities;
 import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -48,14 +49,15 @@ public class OrderEntity {
     private List<OrderItemEntity> items = new ArrayList<>();
 
     @Column(name = "grosstotal")
-    private BigDecimal grossTotal;
+    private BigDecimal grossTotal = BigDecimal.ZERO;
 
-    @Positive(message = MessagesConstants.ORDER_DISCOUNT_POSITIVE)
+    @DecimalMin(value = "0.0", inclusive = false, message = MessagesConstants.ORDER_DISCOUNT_MIN)
+    @DecimalMax(value = "100.0", inclusive = true, message = MessagesConstants.ORDER_DISCOUNT_MAX)
     @Column(name = "discount")
-    private BigDecimal discount;
+    private BigDecimal discount = BigDecimal.ZERO;
 
     @Column(name = "nettotal")
-    private BigDecimal netTotal;
+    private BigDecimal netTotal = BigDecimal.ZERO;
 
     @CreationTimestamp
     @Column(name = "dthreg")

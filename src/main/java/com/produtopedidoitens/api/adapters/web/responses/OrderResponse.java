@@ -14,7 +14,7 @@ public record OrderResponse(
         LocalDate orderDate,
         String status,
 //        List<OrderItemResponse> items,
-//        BigDecimal grossTotal,
+        BigDecimal grossTotal,
         BigDecimal discount,
 //        BigDecimal netTotal,
         LocalDateTime dthreg,
