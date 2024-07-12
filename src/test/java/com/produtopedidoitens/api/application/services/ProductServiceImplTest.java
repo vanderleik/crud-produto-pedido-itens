@@ -1,5 +1,6 @@
 package com.produtopedidoitens.api.application.services;
 
+import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
 import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
@@ -36,6 +37,8 @@ class ProductServiceImplTest {
     private ProductRepository productRepository;
     @Mock
     private ProductConverter productConverter;
+    @Mock
+    OrderItemRepository orderItemRepository;
 
     private ProductRequest productRequest;
     private ProductResponse productResponse;
