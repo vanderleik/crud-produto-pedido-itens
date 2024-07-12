@@ -15,5 +15,6 @@ public interface ProductInputPort {
     ProductProjection read(UUID id);
     ProductResponse update(UUID id, ProductRequest productRequest);
     void delete(UUID id);
+    Page<ProductProjection> getItemsWithFilters(String productName, String type, boolean active, Pageable pageable);
 
 }

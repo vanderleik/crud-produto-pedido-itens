@@ -40,6 +40,16 @@ public class ProductController {
         return ResponseEntity.ok(productInputPort.read(UUID.fromString(id)));
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ProductProjection>> getItemsWithFilters(@RequestParam(required = false) String productName,
+                                                                       @RequestParam(required = false) String type,
+                                                                       @RequestParam(required = false) boolean active,
+                                                                       Pageable pageable) {
+        log.info("getItemsWithFilters:: Recebendo requisição para buscar produtos com filtros");
+        Page<ProductProjection> products = productInputPort.getItemsWithFilters(productName, type, active, pageable);
+        return ResponseEntity.ok(products);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> update(@PathVariable String id, @Valid @RequestBody ProductRequest productRequest) {
         log.info("update:: Recebendo requisição para atualizar um produto com os dados: {}", productRequest);

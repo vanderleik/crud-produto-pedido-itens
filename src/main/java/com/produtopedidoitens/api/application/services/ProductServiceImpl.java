@@ -2,6 +2,7 @@ package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
+import com.produtopedidoitens.api.adapters.web.filters.ProductFilter;
 import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +87,20 @@ public class ProductServiceImpl implements ProductInputPort {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
+    public Page<ProductProjection> getItemsWithFilters(String productName, String type, boolean active, Pageable pageable) {
+        log.info("getItemsWithFilters:: Recebendo requisição para buscar produtos/serviços com filtros");
+        Specification<ProductEntity> specification = ProductFilter.filterByCriteria(productName, type, active);
+        Page<ProductEntity> productPage = productRepository.findAll(specification, pageable);
+        return productPage.map(product -> new ProductProjection(
+                product.getId(),
+                product.getProductName(),
+                product.getPrice(),
+                product.getType().toString(),
+                product.getActive()
+                ));
+    }
+
+    @Override
     public void delete(UUID id) {
         log.info("delete:: Recebendo requisição para deletar produto/serviço pelo id: {}", id);
         ProductEntity entity = getProductEntity(id);
@@ -98,6 +114,7 @@ public class ProductServiceImpl implements ProductInputPort {
             throw new BadRequestException(MessagesConstants.ERROR_DELETE_PRODUCT);
         }
     }
+
 
     private void beforeDelete(ProductEntity product) {
         if (orderItemRepository.existsByProductId(product.getId())) {
