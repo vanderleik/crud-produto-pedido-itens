@@ -96,5 +96,5 @@ class OrderConverterTest {
         assertEquals(orderEntity.getDiscount(), response.discount());
         assertEquals(orderEntity.getNetTotal(), response.netTotal());
     }
-    
+
 }
