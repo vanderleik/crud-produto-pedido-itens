@@ -5,9 +5,9 @@ import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
-import com.produtopedidoitens.api.domain.entities.OrderEntity;
-import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
-import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

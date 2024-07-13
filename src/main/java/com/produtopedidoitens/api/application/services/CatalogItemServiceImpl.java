@@ -1,18 +1,19 @@
-package com.produtopedidoitens.api.services;
+package com.produtopedidoitens.api.application.services;
 
-import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
+import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.web.filters.ProductFilter;
 import com.produtopedidoitens.api.adapters.web.projections.CatalogItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.CatalogItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
-import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
-import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
 import com.produtopedidoitens.api.application.mapper.EnumConverter;
 import com.produtopedidoitens.api.application.mapper.ProductConverter;
 import com.produtopedidoitens.api.application.port.CatalogItemInputPort;
+import com.produtopedidoitens.api.application.validators.CatalogItemValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +36,14 @@ public class CatalogItemServiceImpl implements CatalogItemInputPort {
     private final CatalogItemRepository catalogItemRepository;
     private final ProductConverter productConverter;
     private final OrderItemRepository orderItemRepository;
+    private final CatalogItemValidator catalogItemValidator;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public CatalogItemResponse createCatalogItem(CatalogItemRequest catalogItemRequest) {
         log.info("create:: Recebendo catalogItemRequest: {}", catalogItemRequest);
+        catalogItemValidator.validate(catalogItemRequest);
+
         try {
             CatalogItemEntity entitySaved = catalogItemRepository.save(getEntity(catalogItemRequest));
             CatalogItemResponse response = productConverter.toResponse(entitySaved);

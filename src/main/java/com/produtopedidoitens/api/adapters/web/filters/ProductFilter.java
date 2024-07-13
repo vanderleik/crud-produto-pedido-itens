@@ -1,6 +1,6 @@
 package com.produtopedidoitens.api.adapters.web.filters;
 
-import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 

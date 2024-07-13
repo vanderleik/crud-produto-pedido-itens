@@ -1,4 +1,4 @@
-package com.produtopedidoitens.api.services;
+package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
@@ -13,11 +13,11 @@ import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
 import com.produtopedidoitens.api.application.mapper.OrderItemConverter;
 import com.produtopedidoitens.api.application.port.OrderItemInputPort;
-import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
-import com.produtopedidoitens.api.domain.entities.OrderEntity;
-import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
-import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
-import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

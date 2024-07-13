@@ -1,10 +1,10 @@
 package com.produtopedidoitens.api.adapters.persistence.repositories;
 
-import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
-import com.produtopedidoitens.api.domain.entities.OrderEntity;
-import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
-import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
-import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

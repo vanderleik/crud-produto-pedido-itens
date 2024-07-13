@@ -7,9 +7,9 @@ import com.produtopedidoitens.api.adapters.web.requests.CatalogItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.mapper.ProductConverter;
-import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
-import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
-import com.produtopedidoitens.api.services.CatalogItemServiceImpl;
+import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.application.validators.CatalogItemValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,9 @@ class ProductServiceImplTest {
     @Mock
     private ProductConverter productConverter;
     @Mock
-    OrderItemRepository orderItemRepository;
+    private OrderItemRepository orderItemRepository;
+    @Mock
+    private CatalogItemValidator catalogItemValidator;
 
     private CatalogItemRequest catalogItemRequest;
     private CatalogItemResponse catalogItemResponse;
