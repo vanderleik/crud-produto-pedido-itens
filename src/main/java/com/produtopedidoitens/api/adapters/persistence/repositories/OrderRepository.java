@@ -1,7 +1,7 @@
 package com.produtopedidoitens.api.adapters.persistence.repositories;
 
-import com.produtopedidoitens.api.domain.entities.OrderEntity;
-import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

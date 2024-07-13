@@ -1,6 +1,6 @@
 package com.produtopedidoitens.api.application.mapper;
 
-import com.produtopedidoitens.api.domain.enums.EnumCode;
+import com.produtopedidoitens.api.application.domain.enums.EnumCode;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
