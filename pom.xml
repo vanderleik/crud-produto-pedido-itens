@@ -143,7 +143,7 @@
 						<exclude>**/adapters/web/projections/**</exclude>
 						<exclude>**/adapters/web/requests/**</exclude>
 						<exclude>**/adapters/web/responses/**</exclude>
-						<exclude>**/application/domain/**</exclude>
+						<exclude>**/domain/**</exclude>
 						<exclude>**/application/exceptions/**</exclude>
 						<exclude>**/utils/**</exclude>
 					</excludes>
