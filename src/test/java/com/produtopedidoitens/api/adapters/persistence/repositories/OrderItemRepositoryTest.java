@@ -38,6 +38,7 @@ class OrderItemRepositoryTest {
     void setUp() {
         CatalogItemEntity productEntity = CatalogItemEntity.builder()
                 .catalogItemName("Café")
+                .catalogItemDescription("Café torrado e moído")
                 .price(BigDecimal.valueOf(21.90))
                 .type(EnumCatalogItemType.PRODUCT)
                 .isActive(true)

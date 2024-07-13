@@ -28,12 +28,14 @@ class CatalogItemRepositoryTest {
     void setUp() {
         productEntity = CatalogItemEntity.builder()
                 .catalogItemName("Café")
+                .catalogItemDescription("Café torrado e moído")
                 .price(BigDecimal.valueOf(21.90))
                 .type(EnumCatalogItemType.PRODUCT)
                 .isActive(true)
                 .build();
         serviceEntity = CatalogItemEntity.builder()
                 .catalogItemName("Manutenção")
+                .catalogItemDescription("Café torrado e moído")
                 .price(BigDecimal.valueOf(100.00))
                 .type(EnumCatalogItemType.SERVICE)
                 .isActive(true)

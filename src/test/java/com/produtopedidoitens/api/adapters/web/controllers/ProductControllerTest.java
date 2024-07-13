@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 @WebMvcTest(controllers = CatalogItemController.class)
 class ProductControllerTest {
 
-    private final String URL = "/api/v1/products";
+    private final String URL = "/api/v1/catalog-items";
 
     @Autowired
     private MockMvc mockMvc;
