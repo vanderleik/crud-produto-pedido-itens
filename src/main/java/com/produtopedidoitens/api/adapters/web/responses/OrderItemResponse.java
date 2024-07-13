@@ -22,7 +22,7 @@ public record OrderItemResponse(
                 "\t\t\"dthalt\": \"2024-07-11T19:45:27.386352\",\n" +
                 "\t\t\"version\": 0\n" +
                 "\t},")
-        ProductResponse product,
+        CatalogItemResponse product,
 
         @Schema(description = "Quantidade do item do pedido (em unidades)", example = "1")
         Integer quantity,

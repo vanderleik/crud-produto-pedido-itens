@@ -138,12 +138,13 @@
 					<excludes>
 						<exclude>**/CrudProdutoPedidoItensApplication*</exclude>
 						<exclude>**/adapters/config/**</exclude>
+						<exclude>**/OrderItemRepositoryCustomImpl*</exclude>
 						<exclude>**/adapters/web/controllers/exceptions/**</exclude>
 						<exclude>**/adapters/web/filters/**</exclude>
 						<exclude>**/adapters/web/projections/**</exclude>
 						<exclude>**/adapters/web/requests/**</exclude>
 						<exclude>**/adapters/web/responses/**</exclude>
-						<exclude>**/application/domain/**</exclude>
+						<exclude>**/domain/**</exclude>
 						<exclude>**/application/exceptions/**</exclude>
 						<exclude>**/utils/**</exclude>
 					</excludes>

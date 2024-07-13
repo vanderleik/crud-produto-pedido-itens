@@ -1,4 +1,4 @@
-package com.produtopedidoitens.api.application.domain.entities;
+package com.produtopedidoitens.api.domain.entities;
 
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import jakarta.persistence.*;
@@ -33,8 +33,8 @@ public class OrderItemEntity {
 
     @NotNull(message = MessagesConstants.ORDER_ITEM_PRODUCT_NOT_NULL)
     @ManyToOne
-    @JoinColumn(name = "idproduct")
-    private ProductEntity product;
+    @JoinColumn(name = "catalogitemid")
+    private CatalogItemEntity catalogItem;
 
     @ManyToOne
     @JoinColumn(name = "idorder")

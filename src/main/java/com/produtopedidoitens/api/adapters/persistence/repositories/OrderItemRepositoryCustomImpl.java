@@ -1,9 +1,9 @@
 package com.produtopedidoitens.api.adapters.persistence.repositories;
 
 import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
-import com.produtopedidoitens.api.application.domain.entities.QOrderEntity;
-import com.produtopedidoitens.api.application.domain.entities.QOrderItemEntity;
-import com.produtopedidoitens.api.application.domain.entities.QProductEntity;
+import com.produtopedidoitens.api.domain.entities.QCatalogItemEntity;
+import com.produtopedidoitens.api.domain.entities.QOrderEntity;
+import com.produtopedidoitens.api.domain.entities.QOrderItemEntity;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -23,17 +23,17 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         QOrderEntity order = QOrderEntity.orderEntity;
         QOrderItemEntity orderItem = QOrderItemEntity.orderItemEntity;
-        QProductEntity product = QProductEntity.productEntity;
+        QCatalogItemEntity catalogItem = QCatalogItemEntity.catalogItemEntity;
 
         return queryFactory
                 .select(Projections.constructor(OrderByOrderNumber.class,
-                        product.productName,
+                        catalogItem.catalogItemName,
                         order.orderNumber,
                         order.status.stringValue(),
                         orderItem.quantity,
-                        product.price))
+                        catalogItem.price))
                 .from(orderItem)
-                .innerJoin(orderItem.product, product)
+                .innerJoin(orderItem.catalogItem, catalogItem)
                 .innerJoin(orderItem.order, order)
                 .where(order.orderNumber.eq(orderNumber))
                 .fetch();
