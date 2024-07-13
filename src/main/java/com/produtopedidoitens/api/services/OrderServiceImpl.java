@@ -1,12 +1,12 @@
-package com.produtopedidoitens.api.application.services;
+package com.produtopedidoitens.api.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
 import com.produtopedidoitens.api.adapters.web.filters.OrderFilter;
 import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
-import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
-import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.mapper.EnumConverter;

@@ -1,4 +1,4 @@
-package com.produtopedidoitens.api.application.domain.enums;
+package com.produtopedidoitens.api.domain.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

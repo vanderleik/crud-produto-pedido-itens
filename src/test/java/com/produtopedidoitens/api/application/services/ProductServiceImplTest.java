@@ -5,10 +5,11 @@ import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepos
 import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
-import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
-import com.produtopedidoitens.api.application.domain.enums.EnumProductType;
+import com.produtopedidoitens.api.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.domain.enums.EnumProductType;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.mapper.ProductConverter;
+import com.produtopedidoitens.api.services.ProductServiceImpl;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

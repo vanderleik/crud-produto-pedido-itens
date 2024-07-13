@@ -1,7 +1,7 @@
 package com.produtopedidoitens.api.adapters.persistence.repositories;
 
-import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
-import com.produtopedidoitens.api.application.domain.enums.EnumProductType;
+import com.produtopedidoitens.api.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.domain.enums.EnumProductType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

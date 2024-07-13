@@ -3,8 +3,8 @@ package com.produtopedidoitens.api.application.mapper;
 import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
 import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
 import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
-import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
-import com.produtopedidoitens.api.application.domain.enums.EnumProductType;
+import com.produtopedidoitens.api.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.domain.enums.EnumProductType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

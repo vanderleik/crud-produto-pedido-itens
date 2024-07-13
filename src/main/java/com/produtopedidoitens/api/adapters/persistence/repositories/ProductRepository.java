@@ -1,6 +1,6 @@
 package com.produtopedidoitens.api.adapters.persistence.repositories;
 
-import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.domain.entities.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

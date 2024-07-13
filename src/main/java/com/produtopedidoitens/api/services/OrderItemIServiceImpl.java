@@ -1,4 +1,4 @@
-package com.produtopedidoitens.api.application.services;
+package com.produtopedidoitens.api.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
@@ -7,11 +7,11 @@ import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
-import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
-import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
-import com.produtopedidoitens.api.application.domain.entities.ProductEntity;
-import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
-import com.produtopedidoitens.api.application.domain.enums.EnumProductType;
+import com.produtopedidoitens.api.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
+import com.produtopedidoitens.api.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.domain.enums.EnumProductType;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderItemNotFoundException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
