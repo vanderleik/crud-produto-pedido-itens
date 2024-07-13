@@ -1,6 +1,6 @@
 package com.produtopedidoitens.api.adapters.web.filters;
 
-import com.produtopedidoitens.api.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -8,19 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductFilter {
-    public static Specification<ProductEntity> filterByCriteria(String productName, String type, boolean active) {
+    public static Specification<CatalogItemEntity> filterByCriteria(String catalogItemName, String type, boolean isActive) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (productName != null && !productName.isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), "%" + productName.toLowerCase() + "%"));
+            if (catalogItemName != null && !catalogItemName.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("catalogItemName")), "%" + catalogItemName.toLowerCase() + "%"));
             }
 
             if (type != null && !type.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("type"), type));
             }
 
-            predicates.add(criteriaBuilder.equal(root.get("active"), active));
+            predicates.add(criteriaBuilder.equal(root.get("active"), isActive));
 
 
 

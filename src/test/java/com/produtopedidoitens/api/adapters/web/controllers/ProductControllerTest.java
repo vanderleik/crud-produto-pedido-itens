@@ -1,12 +1,12 @@
 package com.produtopedidoitens.api.adapters.web.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
-import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
-import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
+import com.produtopedidoitens.api.adapters.web.projections.CatalogItemProjection;
+import com.produtopedidoitens.api.adapters.web.requests.CatalogItemRequest;
+import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
-import com.produtopedidoitens.api.application.port.ProductInputPort;
+import com.produtopedidoitens.api.application.port.CatalogItemInputPort;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,14 +26,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-@WebMvcTest(controllers = ProductController.class)
+@WebMvcTest(controllers = CatalogItemController.class)
 class ProductControllerTest {
 
     private final String URL = "/api/v1/products";
@@ -46,62 +45,60 @@ class ProductControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @MockBean
-    private ProductInputPort productInputPort;
+    private CatalogItemInputPort catalogItemInputPort;
 
-    private ProductRequest productRequest;
-    private ProductResponse productResponse;
-    private ProductProjection productProjection;
+    private CatalogItemRequest catalogItemRequest;
+    private CatalogItemResponse catalogItemResponse;
+    private CatalogItemProjection catalogItemProjection;
 
     @BeforeEach
     void setUp() {
-        productRequest = ProductRequest.builder()
-                .productName("Product 1")
+        catalogItemRequest = CatalogItemRequest.builder()
+                .catalogItemName("Product 1")
                 .price("100.0")
                 .type("Produto")
-                .active("true")
+                .isActive("true")
                 .build();
 
-        productResponse = ProductResponse.builder()
+        catalogItemResponse = CatalogItemResponse.builder()
                 .id(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"))
-                .productName("Product 1")
+                .catalogItemName("Product 1")
                 .price(BigDecimal.valueOf(100.0))
                 .type("Produto")
-                .active(true)
-                .dthreg(LocalDateTime.now())
-                .dthalt(LocalDateTime.now())
+                .isActive(true)
                 .version(0L)
                 .build();
 
-        productProjection = ProductProjection.builder()
+        catalogItemProjection = CatalogItemProjection.builder()
                 .id(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"))
-                .productName("Product 1")
+                .catalogItemName("Product 1")
                 .price(BigDecimal.valueOf(100.0))
                 .type("Produto")
-                .active(true)
+                .isActive(true)
                 .build();
     }
 
     @Test
     @DisplayName("Deve criar um produto")
     void testCreate() throws Exception {
-        when(productInputPort.create(productRequest)).thenReturn(productResponse);
+        when(catalogItemInputPort.createCatalogItem(catalogItemRequest)).thenReturn(catalogItemResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(productRequest)))
+                .content(objectMapper.writeValueAsString(catalogItemRequest)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(productResponse)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(catalogItemResponse)));
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao criar um produto")
-    void testCreateError() throws Exception {
-        when(productInputPort.create(productRequest)).thenThrow(new BadRequestException(MessagesConstants.ERROR_SAVE_PRODUCT));
+    void testCreateCatalogItemError() throws Exception {
+        when(catalogItemInputPort.createCatalogItem(catalogItemRequest)).thenThrow(new BadRequestException(MessagesConstants.ERROR_SAVE_PRODUCT));
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(productRequest)))
+                .content(objectMapper.writeValueAsString(catalogItemRequest)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Erro ao salvar produto/serviço\"}"));
@@ -111,10 +108,10 @@ class ProductControllerTest {
     @DisplayName("Deve listar todos os produtos")
     void testList() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
-        List<ProductProjection> productProjectionList = List.of(productProjection);
-        Page<ProductProjection> projectionPage = new PageImpl<>(productProjectionList, pageable, productProjectionList.size());
+        List<CatalogItemProjection> catalogItemProjectionList = List.of(catalogItemProjection);
+        Page<CatalogItemProjection> projectionPage = new PageImpl<>(catalogItemProjectionList, pageable, catalogItemProjectionList.size());
 
-        when(productInputPort.list(pageable)).thenReturn(projectionPage);
+        when(catalogItemInputPort.listAllItems(pageable)).thenReturn(projectionPage);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -126,7 +123,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("Deve retornar um erro ao listar todos os produtos")
     void testListError() throws Exception {
-        when(productInputPort.list(PageRequest.of(0, 10)))
+        when(catalogItemInputPort.listAllItems(PageRequest.of(0, 10)))
                 .thenThrow(new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
@@ -139,19 +136,19 @@ class ProductControllerTest {
     @Test
     @DisplayName("Deve buscar um produto pelo id")
     void testRead() throws Exception {
-        when(productInputPort.read(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"))).thenReturn(productProjection);
+        when(catalogItemInputPort.getItemById(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"))).thenReturn(catalogItemProjection);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(productProjection)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(catalogItemProjection)));
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao buscar um produto pelo id")
     void testReadError() throws Exception {
-        when(productInputPort.read(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")))
+        when(catalogItemInputPort.getItemById(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")))
                 .thenThrow(new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
@@ -164,25 +161,25 @@ class ProductControllerTest {
     @Test
     @DisplayName("Deve atualizar um produto")
     void testUpdate() throws Exception {
-        when(productInputPort.update(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"), productRequest)).thenReturn(productResponse);
+        when(catalogItemInputPort.updateCatalogItem(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"), catalogItemRequest)).thenReturn(catalogItemResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(productRequest)))
+                .content(objectMapper.writeValueAsString(catalogItemRequest)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(productResponse)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(catalogItemResponse)));
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao atualizar um produto")
     void testUpdateError() throws Exception {
-        when(productInputPort.update(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"), productRequest))
+        when(catalogItemInputPort.updateCatalogItem(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"), catalogItemRequest))
                 .thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_PRODUCT));
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(productRequest)))
+                .content(objectMapper.writeValueAsString(catalogItemRequest)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Erro ao atualizar produto/serviço\"}"));
@@ -201,7 +198,7 @@ class ProductControllerTest {
     @DisplayName("Deve retornar um erro ao deletar um produto")
     void testDeleteError() throws Exception {
         doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_PRODUCT))
-                .when(productInputPort).delete(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"));
+                .when(catalogItemInputPort).deleteCatalogItem(UUID.fromString("f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b"));
 
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/f7f6b1e3-4b7b-4b6b-8b7b-4b7b6b8b7b4b")
                 .contentType(MediaType.APPLICATION_JSON))

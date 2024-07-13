@@ -3,19 +3,19 @@ package com.produtopedidoitens.api.application.mapper;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
-import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
+import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
+import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
 import com.produtopedidoitens.api.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
-import com.produtopedidoitens.api.domain.entities.ProductEntity;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrderItemConverter {
 
-    public OrderItemEntity requestToEntity(OrderItemRequest orderItemRequest, ProductEntity productEntity, OrderEntity orderEntity) {
+    public OrderItemEntity requestToEntity(OrderItemRequest orderItemRequest, CatalogItemEntity catalogItemEntity, OrderEntity orderEntity) {
         return OrderItemEntity.builder()
                 .quantity(orderItemRequest.quantity())
-                .product(productEntity)
+                .catalogItem(catalogItemEntity)
                 .order(orderEntity)
                 .build();
     }
@@ -24,23 +24,22 @@ public class OrderItemConverter {
         return OrderItemProjection.builder()
                 .id(orderItemEntity.getId())
                 .quantity(orderItemEntity.getQuantity())
-                .productName(orderItemEntity.getProduct().getProductName())
-                .price(orderItemEntity.getProduct().getPrice())
+                .productName(orderItemEntity.getCatalogItem().getCatalogItemName())
+                .price(orderItemEntity.getCatalogItem().getPrice())
                 .build();
     }
 
     public OrderItemResponse toResponse(OrderItemEntity entitySaved) {
         return OrderItemResponse.builder()
                 .id(entitySaved.getId())
-                .product(ProductResponse.builder()
-                        .id(entitySaved.getProduct().getId())
-                        .productName(entitySaved.getProduct().getProductName())
-                        .price(entitySaved.getProduct().getPrice())
-                        .type(EnumConverter.toString(entitySaved.getProduct().getType()))
-                        .active(entitySaved.getProduct().getActive())
-                        .dthreg(entitySaved.getProduct().getDthreg())
-                        .dthalt(entitySaved.getProduct().getDthalt())
-                        .version(entitySaved.getProduct().getVersion())
+                .product(CatalogItemResponse.builder()
+                        .id(entitySaved.getCatalogItem().getId())
+                        .catalogItemName(entitySaved.getCatalogItem().getCatalogItemName())
+                        .catalogItemDescription(entitySaved.getCatalogItem().getCatalogItemDescription())
+                        .price(entitySaved.getCatalogItem().getPrice())
+                        .type(EnumConverter.toString(entitySaved.getCatalogItem().getType()))
+                        .isActive(entitySaved.getCatalogItem().getIsActive())
+                        .version(entitySaved.getCatalogItem().getVersion())
                         .build())
                 .quantity(entitySaved.getQuantity())
                 .dthreg(entitySaved.getDthreg())

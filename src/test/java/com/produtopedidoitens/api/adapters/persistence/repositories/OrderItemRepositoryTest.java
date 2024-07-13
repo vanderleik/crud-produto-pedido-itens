@@ -1,10 +1,10 @@
 package com.produtopedidoitens.api.adapters.persistence.repositories;
 
+import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
 import com.produtopedidoitens.api.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
-import com.produtopedidoitens.api.domain.entities.ProductEntity;
+import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
 import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
-import com.produtopedidoitens.api.domain.enums.EnumProductType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class OrderItemRepositoryTest {
     @Autowired
     private OrderItemRepository orderItemRepository;
     @Autowired
-    private ProductRepository productRepository;
+    private CatalogItemRepository catalogItemRepository;
     @Autowired
     private OrderRepository orderRepository;
 
@@ -36,14 +36,14 @@ class OrderItemRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        ProductEntity productEntity = ProductEntity.builder()
-                .productName("Café")
+        CatalogItemEntity productEntity = CatalogItemEntity.builder()
+                .catalogItemName("Café")
                 .price(BigDecimal.valueOf(21.90))
-                .type(EnumProductType.PRODUCT)
-                .active(true)
+                .type(EnumCatalogItemType.PRODUCT)
+                .isActive(true)
                 .build();
 
-        productRepository.save(productEntity);
+        catalogItemRepository.save(productEntity);
 
         OrderEntity orderEntity = OrderEntity.builder()
                 .orderNumber(ORDER_NUMBER)
@@ -59,7 +59,7 @@ class OrderItemRepositoryTest {
 
         orderItemEntity = OrderItemEntity.builder()
                 .quantity(10)
-                .product(productEntity)
+                .catalogItem(productEntity)
                 .order(orderEntity)
                 .build();
     }
@@ -72,7 +72,7 @@ class OrderItemRepositoryTest {
         assertNotNull(saved);
         assertNotNull(saved.getId());
         assertEquals(orderItemEntity.getQuantity(), saved.getQuantity());
-        assertEquals(orderItemEntity.getProduct().getId(), saved.getProduct().getId());
+        assertEquals(orderItemEntity.getCatalogItem().getId(), saved.getCatalogItem().getId());
         assertEquals(orderItemEntity.getOrder().getId(), saved.getOrder().getId());
     }
 
@@ -87,7 +87,7 @@ class OrderItemRepositoryTest {
         assertTrue(list.contains(saved));
         assertEquals(1, list.size());
         assertEquals(orderItemEntity.getQuantity(), list.get(0).getQuantity());
-        assertEquals(orderItemEntity.getProduct().getId(), list.get(0).getProduct().getId());
+        assertEquals(orderItemEntity.getCatalogItem().getId(), list.get(0).getCatalogItem().getId());
         assertEquals(orderItemEntity.getOrder().getId(), list.get(0).getOrder().getId());
     }
 
@@ -100,7 +100,7 @@ class OrderItemRepositoryTest {
         assertNotNull(found);
         assertEquals(saved.getId(), found.getId());
         assertEquals(saved.getQuantity(), found.getQuantity());
-        assertEquals(saved.getProduct().getId(), found.getProduct().getId());
+        assertEquals(saved.getCatalogItem().getId(), found.getCatalogItem().getId());
         assertEquals(saved.getOrder().getId(), found.getOrder().getId());
     }
 
@@ -115,7 +115,7 @@ class OrderItemRepositoryTest {
         assertNotNull(updated);
         assertEquals(saved.getId(), updated.getId());
         assertEquals(20, updated.getQuantity());
-        assertEquals(saved.getProduct().getId(), updated.getProduct().getId());
+        assertEquals(saved.getCatalogItem().getId(), updated.getCatalogItem().getId());
         assertEquals(saved.getOrder().getId(), updated.getOrder().getId());
     }
 

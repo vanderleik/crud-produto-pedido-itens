@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
-import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
+import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.port.OrderItemInputPort;
@@ -55,14 +55,12 @@ class OrderItemControllerTest {
 
     @BeforeEach
     void setUp() {
-        ProductResponse productResponse = ProductResponse.builder()
+        CatalogItemResponse catalogItemResponse = CatalogItemResponse.builder()
                 .id(UUID.fromString("2104a849-13c4-46f7-8e11-a7bf2504ba46"))
-                .productName("Product 1")
+                .catalogItemName("Product 1")
                 .price(BigDecimal.valueOf(1000.00))
                 .type("Produto")
-                .active(true)
-                .dthreg(LocalDateTime.now())
-                .dthalt(LocalDateTime.now())
+                .isActive(true)
                 .version(0L)
                 .build();
 
@@ -74,7 +72,7 @@ class OrderItemControllerTest {
 
         orderItemResponse = OrderItemResponse.builder()
                 .id(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
-                .product(productResponse)
+                .product(catalogItemResponse)
                 .quantity(1)
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
@@ -83,9 +81,9 @@ class OrderItemControllerTest {
 
         orderItemProjection = OrderItemProjection.builder()
                 .id(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
-                .productName(productResponse.productName())
+                .productName(catalogItemResponse.catalogItemName())
                 .quantity(1)
-                .price(productResponse.price())
+                .price(catalogItemResponse.price())
                 .build();
     }
 

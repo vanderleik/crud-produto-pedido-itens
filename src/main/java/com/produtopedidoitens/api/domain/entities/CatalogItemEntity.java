@@ -1,6 +1,6 @@
 package com.produtopedidoitens.api.domain.entities;
 
-import com.produtopedidoitens.api.domain.enums.EnumProductType;
+import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -21,34 +21,42 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "tbproduct")
-public class ProductEntity {
+@Table(name = "tbcatalogitem")
+public class CatalogItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Include
-    @Column(name = "idproduct")
+    @Column(name = "catalogitemid")
     private UUID id;
 
     @NotBlank(message = MessagesConstants.PRODUCT_NAME_NOT_BLANK)
     @Size(max = 60)
-    @Column(name = "productname")
-    private String productName;
+    @Column(name = "catalogitemname")
+    private String catalogItemName;
+
+    @NotBlank(message = MessagesConstants.PRODUCT_DESCRIPTION_NOT_BLANK)
+    @Size(max = 60)
+    @Column(name = "catalogitemdescription")
+    private String catalogItemDescription;
+
+    @Column(name = "catalogitemnumber")
+    private String catalogItemNumber;
 
     @NotNull(message = MessagesConstants.PRODUCT_PRICE_NOT_NULL)
     @Positive(message = MessagesConstants.PRODUCT_PRICE_POSITIVE)
     @Positive
     @Column(name = "price")
-    private BigDecimal price = BigDecimal.ZERO;
+    private BigDecimal price;
 
     @NotNull(message = MessagesConstants.PRODUCT_TYPE_NOT_NULL)
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private EnumProductType type;
+    private EnumCatalogItemType type;
 
     @NotNull(message = MessagesConstants.PRODUCT_ACTIVE_NOT_NULL)
-    @Column(name = "active")
-    private Boolean active;
+    @Column(name = "isactive")
+    private Boolean isActive;
 
     @CreationTimestamp
     @Column(name = "dthreg")

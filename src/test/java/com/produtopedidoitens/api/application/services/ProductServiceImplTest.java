@@ -1,15 +1,15 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
-import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
-import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
-import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
-import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
-import com.produtopedidoitens.api.domain.entities.ProductEntity;
-import com.produtopedidoitens.api.domain.enums.EnumProductType;
+import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
+import com.produtopedidoitens.api.adapters.web.projections.CatalogItemProjection;
+import com.produtopedidoitens.api.adapters.web.requests.CatalogItemRequest;
+import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.mapper.ProductConverter;
-import com.produtopedidoitens.api.services.ProductServiceImpl;
+import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.services.CatalogItemServiceImpl;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,54 +34,52 @@ import static org.mockito.Mockito.*;
 class ProductServiceImplTest {
 
     @InjectMocks
-    private ProductServiceImpl productServiceImpl;
+    private CatalogItemServiceImpl productServiceImpl;
 
     @Mock
-    private ProductRepository productRepository;
+    private CatalogItemRepository catalogItemRepository;
     @Mock
     private ProductConverter productConverter;
     @Mock
     OrderItemRepository orderItemRepository;
 
-    private ProductRequest productRequest;
-    private ProductResponse productResponse;
-    private ProductProjection productProjection;
-    private ProductEntity productEntity;
+    private CatalogItemRequest catalogItemRequest;
+    private CatalogItemResponse catalogItemResponse;
+    private CatalogItemProjection catalogItemProjection;
+    private CatalogItemEntity productEntity;
 
     @BeforeEach
     void setUp() {
-        productRequest = ProductRequest.builder()
-                .productName("Product")
+        catalogItemRequest = CatalogItemRequest.builder()
+                .catalogItemName("Product")
                 .price("100.00")
                 .type("Produto")
-                .active("true")
+                .isActive("true")
                 .build();
 
-        productResponse = ProductResponse.builder()
+        catalogItemResponse = CatalogItemResponse.builder()
                 .id(UUID.fromString("f47b3b2b-3b1b-4b3b-8b3b-3b1b3b1b3b1b"))
-                .productName("Product")
+                .catalogItemName("Product")
                 .price(BigDecimal.valueOf(100.00))
                 .type("Produto")
-                .active(true)
-                .dthreg(LocalDateTime.now())
-                .dthalt(LocalDateTime.now())
+                .isActive(true)
                 .version(0L)
                 .build();
 
-        productProjection = ProductProjection.builder()
+        catalogItemProjection = CatalogItemProjection.builder()
                 .id(UUID.fromString("f47b3b2b-3b1b-4b3b-8b3b-3b1b3b1b3b1b"))
-                .productName("Product")
+                .catalogItemName("Product")
                 .price(BigDecimal.valueOf(100.00))
                 .type("Produto")
-                .active(true)
+                .isActive(true)
                 .build();
 
-        productEntity = ProductEntity.builder()
+        productEntity = CatalogItemEntity.builder()
                 .id(UUID.fromString("f47b3b2b-3b1b-4b3b-8b3b-3b1b3b1b3b1b"))
-                .productName("Product")
+                .catalogItemName("Product")
                 .price(BigDecimal.valueOf(100.00))
-                .type(EnumProductType.PRODUCT)
-                .active(true)
+                .type(EnumCatalogItemType.PRODUCT)
+                .isActive(true)
                 .dthreg(LocalDateTime.now())
                 .dthalt(LocalDateTime.now())
                 .version(0L)
@@ -91,135 +89,135 @@ class ProductServiceImplTest {
     @Test
     @DisplayName("Deve criar um produto com sucesso")
     void testCreateSuccess() {
-        when(productConverter.toEntity(productRequest)).thenReturn(productEntity);
-        when(productRepository.save(productEntity)).thenReturn(productEntity);
-        when(productConverter.toResponse(productEntity)).thenReturn(productResponse);
+        when(productConverter.toEntity(catalogItemRequest)).thenReturn(productEntity);
+        when(catalogItemRepository.save(productEntity)).thenReturn(productEntity);
+        when(productConverter.toResponse(productEntity)).thenReturn(catalogItemResponse);
 
-        ProductResponse response = assertDoesNotThrow(() -> productServiceImpl.create(productRequest));
+        CatalogItemResponse response = assertDoesNotThrow(() -> productServiceImpl.createCatalogItem(catalogItemRequest));
         assertNotNull(response);
-        assertEquals(productResponse.productName(), response.productName());
-        assertEquals(productResponse.price(), response.price());
-        assertEquals(productResponse.type(), response.type());
-        assertEquals(productResponse.active(), response.active());
-        verify(productRepository).save(productEntity);
-        verify(productConverter).toEntity(productRequest);
+        assertEquals(catalogItemResponse.catalogItemName(), response.catalogItemName());
+        assertEquals(catalogItemResponse.price(), response.price());
+        assertEquals(catalogItemResponse.type(), response.type());
+        assertEquals(catalogItemResponse.isActive(), response.isActive());
+        verify(catalogItemRepository).save(productEntity);
+        verify(productConverter).toEntity(catalogItemRequest);
         verify(productConverter).toResponse(productEntity);
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao criar um produto")
     void testCreateError() {
-        when(productConverter.toEntity(productRequest)).thenReturn(productEntity);
-        when(productRepository.save(productEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_SAVE_PRODUCT));
+        when(productConverter.toEntity(catalogItemRequest)).thenReturn(productEntity);
+        when(catalogItemRepository.save(productEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_SAVE_PRODUCT));
 
-        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.create(productRequest));
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.createCatalogItem(catalogItemRequest));
         assertEquals(MessagesConstants.ERROR_SAVE_PRODUCT, exception.getMessage());
     }
 
     @Test
     @DisplayName("Deve listar todos os produtos salvos")
     void testListSuccess() {
-        when(productRepository.findAll()).thenReturn(List.of(productEntity));
-        when(productConverter.toProjection(productEntity)).thenReturn(productProjection);
+        when(catalogItemRepository.findAll()).thenReturn(List.of(productEntity));
+        when(productConverter.toProjection(productEntity)).thenReturn(catalogItemProjection);
 
-        Page<ProductProjection> responseList = assertDoesNotThrow(() -> productServiceImpl.list(PageRequest.of(0, 10)));
+        Page<CatalogItemProjection> responseList = assertDoesNotThrow(() -> productServiceImpl.listAllItems(PageRequest.of(0, 10)));
 
         assertNotNull(responseList);
         assertFalse(responseList.isEmpty());
         assertEquals(1, responseList.toList().size());
-        verify(productRepository).findAll();
+        verify(catalogItemRepository).findAll();
         verify(productConverter).toProjection(productEntity);
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao listar os produtos")
     void testListError() {
-        when(productRepository.findAll()).thenReturn(List.of());
+        when(catalogItemRepository.findAll()).thenReturn(List.of());
 
-        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.list(PageRequest.of(0, 10)));
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.listAllItems(PageRequest.of(0, 10)));
         assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
     @DisplayName("Deve retornar um produto pelo id")
     void testReadSuccess() {
-        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
-        when(productConverter.toProjection(productEntity)).thenReturn(productProjection);
+        when(catalogItemRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        when(productConverter.toProjection(productEntity)).thenReturn(catalogItemProjection);
 
-        ProductProjection response = assertDoesNotThrow(() -> productServiceImpl.read(productEntity.getId()));
+        CatalogItemProjection response = assertDoesNotThrow(() -> productServiceImpl.getItemById(productEntity.getId()));
         assertNotNull(response);
-        assertEquals(productProjection.productName(), response.productName());
-        assertEquals(productProjection.price(), response.price());
-        assertEquals(productProjection.type(), response.type());
-        assertEquals(productProjection.active(), response.active());
-        verify(productRepository).findById(productEntity.getId());
+        assertEquals(catalogItemProjection.catalogItemName(), response.catalogItemName());
+        assertEquals(catalogItemProjection.price(), response.price());
+        assertEquals(catalogItemProjection.type(), response.type());
+        assertEquals(catalogItemProjection.isActive(), response.isActive());
+        verify(catalogItemRepository).findById(productEntity.getId());
         verify(productConverter).toProjection(productEntity);
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao buscar um produto pelo id")
     void testReadError() {
-        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
+        when(catalogItemRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.read(productEntity.getId()));
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.getItemById(productEntity.getId()));
         assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
     @DisplayName("Deve atualizar um produto com sucesso")
     void testUpdate() {
-        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
-        when(productRepository.save(productEntity)).thenReturn(productEntity);
-        when(productConverter.toResponse(productEntity)).thenReturn(productResponse);
+        when(catalogItemRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        when(catalogItemRepository.save(productEntity)).thenReturn(productEntity);
+        when(productConverter.toResponse(productEntity)).thenReturn(catalogItemResponse);
 
-        ProductResponse response = assertDoesNotThrow(() -> productServiceImpl.update(productEntity.getId(), productRequest));
+        CatalogItemResponse response = assertDoesNotThrow(() -> productServiceImpl.updateCatalogItem(productEntity.getId(), catalogItemRequest));
         assertNotNull(response);
-        assertEquals(productResponse.productName(), response.productName());
-        assertEquals(productResponse.price(), response.price());
-        assertEquals(productResponse.type(), response.type());
-        assertEquals(productResponse.active(), response.active());
-        verify(productRepository).findById(productEntity.getId());
-        verify(productRepository).save(productEntity);
+        assertEquals(catalogItemResponse.catalogItemName(), response.catalogItemName());
+        assertEquals(catalogItemResponse.price(), response.price());
+        assertEquals(catalogItemResponse.type(), response.type());
+        assertEquals(catalogItemResponse.isActive(), response.isActive());
+        verify(catalogItemRepository).findById(productEntity.getId());
+        verify(catalogItemRepository).save(productEntity);
         verify(productConverter).toResponse(productEntity);
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao atualizar um produto")
     void testUpdateError() {
-        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
+        when(catalogItemRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.update(productEntity.getId(), productRequest));
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.updateCatalogItem(productEntity.getId(), catalogItemRequest));
         assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
 
-        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
-        when(productRepository.save(productEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_PRODUCT));
+        when(catalogItemRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        when(catalogItemRepository.save(productEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_PRODUCT));
 
-        exception = assertThrows(Exception.class, () -> productServiceImpl.update(productEntity.getId(), productRequest));
+        exception = assertThrows(Exception.class, () -> productServiceImpl.updateCatalogItem(productEntity.getId(), catalogItemRequest));
         assertEquals(MessagesConstants.ERROR_UPDATE_PRODUCT, exception.getMessage());
     }
 
     @Test
     @DisplayName("Deve deletar um produto com sucesso")
     void testDeleteSuccess() {
-        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        when(catalogItemRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
 
-        assertDoesNotThrow(() -> productServiceImpl.delete(productEntity.getId()));
-        verify(productRepository).findById(productEntity.getId());
-        verify(productRepository).delete(productEntity);
+        assertDoesNotThrow(() -> productServiceImpl.deleteCatalogItem(productEntity.getId()));
+        verify(catalogItemRepository).findById(productEntity.getId());
+        verify(catalogItemRepository).delete(productEntity);
     }
 
     @Test
     @DisplayName("Deve retornar um erro ao deletar um produto")
     void testDeleteError() {
-        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
+        when(catalogItemRepository.findById(productEntity.getId())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.delete(productEntity.getId()));
+        Exception exception = assertThrows(Exception.class, () -> productServiceImpl.deleteCatalogItem(productEntity.getId()));
         assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
 
-        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
-        doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_PRODUCT)).when(productRepository).delete(productEntity);
+        when(catalogItemRepository.findById(productEntity.getId())).thenReturn(Optional.of(productEntity));
+        doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_PRODUCT)).when(catalogItemRepository).delete(productEntity);
 
-        exception = assertThrows(Exception.class, () -> productServiceImpl.delete(productEntity.getId()));
+        exception = assertThrows(Exception.class, () -> productServiceImpl.deleteCatalogItem(productEntity.getId()));
         assertEquals(MessagesConstants.ERROR_DELETE_PRODUCT, exception.getMessage());
     }
 

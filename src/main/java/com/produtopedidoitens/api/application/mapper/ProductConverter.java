@@ -1,10 +1,10 @@
 package com.produtopedidoitens.api.application.mapper;
 
-import com.produtopedidoitens.api.adapters.web.projections.ProductProjection;
-import com.produtopedidoitens.api.adapters.web.requests.ProductRequest;
-import com.produtopedidoitens.api.adapters.web.responses.ProductResponse;
-import com.produtopedidoitens.api.domain.entities.ProductEntity;
-import com.produtopedidoitens.api.domain.enums.EnumProductType;
+import com.produtopedidoitens.api.adapters.web.projections.CatalogItemProjection;
+import com.produtopedidoitens.api.adapters.web.requests.CatalogItemRequest;
+import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
+import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,35 +13,37 @@ import java.math.BigDecimal;
 public class ProductConverter {
 
 
-    public ProductEntity toEntity(ProductRequest productRequest) {
-        return ProductEntity.builder()
-                .productName(productRequest.productName())
-                .price(new BigDecimal(productRequest.price()))
-                .type(EnumConverter.fromString(productRequest.type(), EnumProductType.class))
-                .active(Boolean.parseBoolean(productRequest.active()))
+    public CatalogItemEntity toEntity(CatalogItemRequest catalogItemRequest) {
+        return CatalogItemEntity.builder()
+                .catalogItemName(catalogItemRequest.catalogItemName())
+                .catalogItemDescription(catalogItemRequest.catalogItemDescription())
+                .price(new BigDecimal(catalogItemRequest.price()))
+                .type(EnumConverter.fromString(catalogItemRequest.type(), EnumCatalogItemType.class))
+                .isActive(Boolean.parseBoolean(catalogItemRequest.isActive()))
                 .build();
     }
 
-    public ProductResponse toResponse(ProductEntity entitySaved) {
-        return ProductResponse.builder()
+    public CatalogItemResponse toResponse(CatalogItemEntity entitySaved) {
+        return CatalogItemResponse.builder()
                 .id(entitySaved.getId())
-                .productName(entitySaved.getProductName())
+                .catalogItemName(entitySaved.getCatalogItemName())
+                .catalogItemDescription(entitySaved.getCatalogItemDescription())
                 .price(entitySaved.getPrice())
                 .type(EnumConverter.toString(entitySaved.getType()))
-                .active(entitySaved.getActive())
-                .dthreg(entitySaved.getDthreg())
-                .dthalt(entitySaved.getDthalt())
+                .isActive(entitySaved.getIsActive())
                 .version(entitySaved.getVersion())
                 .build();
     }
 
-    public ProductProjection toProjection(ProductEntity productEntity) {
-        return ProductProjection.builder()
-                .id(productEntity.getId())
-                .productName(productEntity.getProductName())
-                .price(productEntity.getPrice())
-                .type(EnumConverter.toString(productEntity.getType()))
-                .active(productEntity.getActive())
+    public CatalogItemProjection toProjection(CatalogItemEntity catalogItemEntity) {
+        return CatalogItemProjection.builder()
+                .id(catalogItemEntity.getId())
+                .catalogItemName(catalogItemEntity.getCatalogItemName())
+                .catalogItemDescription(catalogItemEntity.getCatalogItemDescription())
+                .price(catalogItemEntity.getPrice())
+                .type(EnumConverter.toString(catalogItemEntity.getType()))
+                .isActive(catalogItemEntity.getIsActive())
+                .version(catalogItemEntity.getVersion())
                 .build();
     }
 }

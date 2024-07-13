@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum EnumProductType implements EnumCode {
+public enum EnumCatalogItemType implements EnumCode {
 
     PRODUCT("Produto"),
     SERVICE("Serviço");

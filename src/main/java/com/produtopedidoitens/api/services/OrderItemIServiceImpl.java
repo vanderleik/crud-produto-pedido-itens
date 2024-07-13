@@ -2,22 +2,22 @@ package com.produtopedidoitens.api.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
-import com.produtopedidoitens.api.adapters.persistence.repositories.ProductRepository;
+import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
 import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
-import com.produtopedidoitens.api.domain.entities.OrderEntity;
-import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
-import com.produtopedidoitens.api.domain.entities.ProductEntity;
-import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
-import com.produtopedidoitens.api.domain.enums.EnumProductType;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderItemNotFoundException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
 import com.produtopedidoitens.api.application.mapper.OrderItemConverter;
 import com.produtopedidoitens.api.application.port.OrderItemInputPort;
+import com.produtopedidoitens.api.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.domain.entities.OrderItemEntity;
+import com.produtopedidoitens.api.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ import java.util.UUID;
 public class OrderItemIServiceImpl implements OrderItemInputPort {
     
     private final OrderItemRepository orderItemRepository;
-    private final ProductRepository productRepository;
+    private final CatalogItemRepository catalogItemRepository;
     private final OrderRepository orderRepository;
     private final OrderItemConverter orderItemConverter;
 
@@ -127,7 +127,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         if (grossTotal == null) {
             grossTotal = BigDecimal.ZERO;
         }
-        BigDecimal price = orderItemEntity.getProduct().getPrice();
+        BigDecimal price = orderItemEntity.getCatalogItem().getPrice();
         Integer quantity = orderItemEntity.getQuantity();
         BigDecimal result = price.multiply(BigDecimal.valueOf(quantity));
         log.info("setGrossTotal:: Total bruto do item adicionado ao pedido: {}", result);
@@ -139,12 +139,12 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         OrderEntity orderEntity = getOrderEntity(orderItemRequest.orderId());
         log.info("create:: Total bruto do pedido calculado: {}", orderEntity.getGrossTotal());
 
-        ProductEntity produtoEntity = getProdutoEntity(orderItemRequest.productId());
+        CatalogItemEntity catalogItemEntity = getProdutoEntity(orderItemRequest.productId());
 
         if (EnumOrderStatus.OPEN.equals(orderEntity.getStatus())) {
-            if (EnumProductType.PRODUCT.equals(produtoEntity.getType())) {
+            if (EnumCatalogItemType.PRODUCT.equals(catalogItemEntity.getType())) {
                 BigDecimal discountPercent = orderEntity.getDiscount().divide(BigDecimal.valueOf(100)).setScale(4, BigDecimal.ROUND_HALF_EVEN);
-                BigDecimal price = produtoEntity.getPrice();
+                BigDecimal price = catalogItemEntity.getPrice();
                 Integer quantity = orderItemEntity.getQuantity();
                 BigDecimal grossTotalItem = price.multiply(BigDecimal.valueOf(quantity)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
 
@@ -166,8 +166,8 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         }
 
         if (EnumOrderStatus.OPEN.equals(orderEntity.getStatus())) {
-            if (EnumProductType.SERVICE.equals(produtoEntity.getType())) {
-                BigDecimal price = produtoEntity.getPrice();
+            if (EnumCatalogItemType.SERVICE.equals(catalogItemEntity.getType())) {
+                BigDecimal price = catalogItemEntity.getPrice();
                 Integer quantity = orderItemEntity.getQuantity();
                 BigDecimal grossTotalItem = price.multiply(BigDecimal.valueOf(quantity)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
 
@@ -187,11 +187,11 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
 
     private void updateEntity(OrderItemEntity entity, OrderItemRequest orderItemRequest) {
         entity.setQuantity(orderItemRequest.quantity() == null ? entity.getQuantity() : orderItemRequest.quantity());
-        entity.setProduct(orderItemRequest.productId() == null ? entity.getProduct() : getProdutoEntity(orderItemRequest.productId()));
+        entity.setCatalogItem(orderItemRequest.productId() == null ? entity.getCatalogItem() : getProdutoEntity(orderItemRequest.productId()));
     }
 
-    private ProductEntity getProdutoEntity(String productId) {
-        return productRepository.findById(UUID.fromString(productId)).orElseThrow(() -> {
+    private CatalogItemEntity getProdutoEntity(String catalogItemId) {
+        return catalogItemRepository.findById(UUID.fromString(catalogItemId)).orElseThrow(() -> {
             log.error("getProdutoEntity:: Ocorreu um erro ao buscar o produto por id: {}", MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
             return new ProductNotFoundException(MessagesConstants.ERROR_PRODUCT_NOT_FOUND);
         });
@@ -215,13 +215,13 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     }
 
     private OrderItemEntity getOrderItemEntity(OrderItemRequest orderItemRequest) {
-        ProductEntity productEntity = getProdutoEntity(orderItemRequest.productId());
-        if (Boolean.FALSE.equals(productEntity.getActive())) {
+        CatalogItemEntity catalogItemEntity = getProdutoEntity(orderItemRequest.productId());
+        if (Boolean.FALSE.equals(catalogItemEntity.getIsActive())) {
             log.error("getOrderItemEntity:: O produto/serviço não está ativo: {}", MessagesConstants.ERROR_PRODUCT_NOT_ACTIVE);
             throw new BadRequestException(MessagesConstants.ERROR_PRODUCT_NOT_ACTIVE);
         }
         OrderEntity orderEntity = getOrderEntity(orderItemRequest.orderId());
-        return orderItemConverter.requestToEntity(orderItemRequest, productEntity, orderEntity);
+        return orderItemConverter.requestToEntity(orderItemRequest, catalogItemEntity, orderEntity);
     }
 
     private OrderEntity getOrderEntity(String orderId) {
