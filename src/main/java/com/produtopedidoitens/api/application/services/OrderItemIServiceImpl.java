@@ -230,6 +230,10 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     }
 
     private OrderEntity getOrderEntity(String orderId) {
+        if (orderId == null || orderId.isEmpty()) {
+            log.error("getOrderEntity:: O id do pedido não pode ser nulo ou vazio: {}", MessagesConstants.ERROR_ORDER_ID_NOT_NULL);
+            throw new OrderNotFoundException(MessagesConstants.ERROR_ORDER_ID_NOT_NULL);
+        }
         return orderRepository.findById(UUID.fromString(orderId)).orElseThrow(() -> {
             log.error("getOrderEntity:: Ocorreu um erro ao buscar o pedido por id: {}", MessagesConstants.ERROR_NOT_FOUND_ORDER);
             return new OrderNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER);
