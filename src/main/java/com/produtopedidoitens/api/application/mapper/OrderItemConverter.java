@@ -23,8 +23,9 @@ public class OrderItemConverter {
     public OrderItemProjection toProjection(OrderItemEntity orderItemEntity) {
         return OrderItemProjection.builder()
                 .id(orderItemEntity.getId())
+                .orderNumber(orderItemEntity.getOrder().getOrderNumber())
+                .catalogItemName(orderItemEntity.getCatalogItem().getCatalogItemName())
                 .quantity(orderItemEntity.getQuantity())
-                .productName(orderItemEntity.getCatalogItem().getCatalogItemName())
                 .price(orderItemEntity.getCatalogItem().getPrice())
                 .build();
     }
@@ -32,10 +33,11 @@ public class OrderItemConverter {
     public OrderItemResponse toResponse(OrderItemEntity entitySaved) {
         return OrderItemResponse.builder()
                 .id(entitySaved.getId())
-                .product(CatalogItemResponse.builder()
+                .catalogItem(CatalogItemResponse.builder()
                         .id(entitySaved.getCatalogItem().getId())
                         .catalogItemName(entitySaved.getCatalogItem().getCatalogItemName())
                         .catalogItemDescription(entitySaved.getCatalogItem().getCatalogItemDescription())
+                        .catalogItemNumber(entitySaved.getCatalogItem().getCatalogItemNumber())
                         .price(entitySaved.getCatalogItem().getPrice())
                         .type(EnumConverter.toString(entitySaved.getCatalogItem().getType()))
                         .isActive(entitySaved.getCatalogItem().getIsActive())

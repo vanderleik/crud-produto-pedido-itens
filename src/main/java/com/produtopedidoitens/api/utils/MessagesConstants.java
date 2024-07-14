@@ -43,6 +43,7 @@ public class MessagesConstants {
     public static final String ORDER_ITEM_CATALOG_ITEM_ID_NOT_NULL = "O id do produto/serviço deve ser preenchido";
     public static final String ORDER_ITEM_ORDER_ID_NOT_NULL = "O id do pedido deve ser preenchido";
     public static final String ORDER_ITEM_QUANTITY_NUMBER = "A quantidade do item do pedido deve ser um valor numérico positivo";
+    public static final String ORDER_STATUS_NOT_OPEN = "O status do pedido deve ser Aberto para receber o cadastramento de um novo item";
 
     private MessagesConstants() {
     }

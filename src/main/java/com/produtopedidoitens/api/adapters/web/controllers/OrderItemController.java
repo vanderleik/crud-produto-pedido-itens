@@ -3,6 +3,7 @@ package com.produtopedidoitens.api.adapters.web.controllers;
 import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
+import com.produtopedidoitens.api.adapters.web.requests.OrderItemUpdateRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
 import com.produtopedidoitens.api.application.port.OrderItemInputPort;
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,9 +100,9 @@ public class OrderItemController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<OrderItemResponse> updateOrderItem(@PathVariable String id, @Valid @RequestBody OrderItemRequest orderItemRequest) {
-        log.info("updateOrderItem:: Recebendo requisição para atualizar um item de pedido com os dados: {}", orderItemRequest);
-        return ResponseEntity.ok(orderItemInputPort.updateOrderItem(UUID.fromString(id), orderItemRequest));
+    public ResponseEntity<OrderItemResponse> updateOrderItem(@PathVariable String id, @Valid @RequestBody OrderItemUpdateRequest orderItemUpdateRequest) {
+        log.info("updateOrderItem:: Recebendo requisição para atualizar um item de pedido com os dados: {}", orderItemUpdateRequest);
+        return ResponseEntity.ok(orderItemInputPort.updateOrderItem(UUID.fromString(id), orderItemUpdateRequest));
     }
 
     @Operation(summary = "Endpoint responsável por deletar um item de pedido")

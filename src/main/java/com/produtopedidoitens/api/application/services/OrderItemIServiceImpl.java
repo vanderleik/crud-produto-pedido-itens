@@ -6,6 +6,7 @@ import com.produtopedidoitens.api.adapters.persistence.repositories.OrderReposit
 import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
+import com.produtopedidoitens.api.adapters.web.requests.OrderItemUpdateRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
 import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
@@ -48,7 +49,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     @Override
     public OrderItemResponse createOrderItem(OrderItemRequest orderItemRequest) {
         log.info("createOrderItem:: Recebendo orderItemRequest: {}", orderItemRequest);
-        orderItemValidator.validate(orderItemRequest);
+        orderItemValidator.validate(orderItemRequest, getOrderEntity(orderItemRequest.orderId()));
 
         try {
             OrderItemEntity orderItemEntity = getOrderItemEntity(orderItemRequest);
@@ -70,7 +71,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     public Page<OrderItemProjection> listAllOrderItems(Pageable pageable) {
         log.info("listAllOrderItems:: Listando itens do pedido");
         List<OrderItemEntity> list = getOrderItemEntities();
-        log.info("listAllOrderItems:: Itens do pedido encontrados: {}", list);
+        log.info("listAllOrderItems:: Itens do pedido encontrados");
         List<OrderItemProjection> orderItemProjectionList = list.stream().map(orderItemConverter::toProjection).toList();
         return new PageImpl<>(orderItemProjectionList, pageable, orderItemProjectionList.size());
     }
@@ -79,7 +80,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     public OrderItemProjection getOrderItemById(UUID id) {
         log.info("getOrderItemById:: Buscando item do pedido por id: {}", id);
         OrderItemEntity entity = getOrderItemEntity(id);
-        log.info("getOrderItemById:: Item do pedido encontrado: {}", entity);
+        log.info("getOrderItemById:: Item do pedido encontrado");
         return orderItemConverter.toProjection(entity);
     }
 
@@ -97,10 +98,10 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public OrderItemResponse updateOrderItem(UUID id, OrderItemRequest orderItemRequest) {
-        log.info("updateOrderItem:: Recebendo requisição para atualizar item do pedido: {}", orderItemRequest);
+    public OrderItemResponse updateOrderItem(UUID id, OrderItemUpdateRequest orderItemUpdateRequest) {
+        log.info("updateOrderItem:: Recebendo requisição para atualizar item do pedido: {}", orderItemUpdateRequest);
         OrderItemEntity entity = getOrderItemEntity(id);
-        updateEntity(entity, orderItemRequest);
+        updateEntity(entity, orderItemUpdateRequest);
         try {
             OrderItemEntity entitySaved = orderItemRepository.save(entity);
             OrderItemResponse response = orderItemConverter.toResponse(entitySaved);
@@ -144,7 +145,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         OrderEntity orderEntity = getOrderEntity(orderItemRequest.orderId());
         log.info("createOrderItem:: Total bruto do pedido calculado: {}", orderEntity.getGrossTotal());
 
-        CatalogItemEntity catalogItemEntity = getProdutoEntity(orderItemRequest.productId());
+        CatalogItemEntity catalogItemEntity = getProdutoEntity(orderItemRequest.catalogItemId());
 
         if (EnumOrderStatus.OPEN.equals(orderEntity.getStatus())) {
             if (EnumCatalogItemType.PRODUCT.equals(catalogItemEntity.getType())) {
@@ -190,9 +191,8 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         }
     }
 
-    private void updateEntity(OrderItemEntity entity, OrderItemRequest orderItemRequest) {
-        entity.setQuantity(orderItemRequest.quantity() == null ? entity.getQuantity() : Integer.parseInt(orderItemRequest.quantity()));
-        entity.setCatalogItem(orderItemRequest.productId() == null ? entity.getCatalogItem() : getProdutoEntity(orderItemRequest.productId()));
+    private void updateEntity(OrderItemEntity entity, OrderItemUpdateRequest orderItemUpdateRequest) {
+        entity.setQuantity(orderItemUpdateRequest.quantity() == null ? entity.getQuantity() : Integer.parseInt(orderItemUpdateRequest.quantity()));
     }
 
     private CatalogItemEntity getProdutoEntity(String catalogItemId) {
@@ -220,7 +220,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     }
 
     private OrderItemEntity getOrderItemEntity(OrderItemRequest orderItemRequest) {
-        CatalogItemEntity catalogItemEntity = getProdutoEntity(orderItemRequest.productId());
+        CatalogItemEntity catalogItemEntity = getProdutoEntity(orderItemRequest.catalogItemId());
         if (Boolean.FALSE.equals(catalogItemEntity.getIsActive())) {
             log.error("getOrderItemEntity:: O produto/serviço não está ativo: {}", MessagesConstants.ERROR_PRODUCT_NOT_ACTIVE);
             throw new BadRequestException(MessagesConstants.ERROR_PRODUCT_NOT_ACTIVE);

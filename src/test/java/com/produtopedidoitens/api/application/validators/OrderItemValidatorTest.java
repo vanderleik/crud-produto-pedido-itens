@@ -1,6 +1,8 @@
 package com.produtopedidoitens.api.application.validators;
 
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -24,20 +27,26 @@ class OrderItemValidatorTest {
     private OrderItemValidator orderItemValidator;
 
     private OrderItemRequest orderItemRequest;
+    private OrderEntity orderEntity;
 
     @BeforeEach
     void setUp() {
         orderItemRequest = OrderItemRequest.builder()
                 .quantity("10")
-                .productId("033f8740-e073-4c6c-8619-79dae49e4c0b")
+                .catalogItemId("033f8740-e073-4c6c-8619-79dae49e4c0b")
                 .orderId("82a68f02-d0f8-4e1a-900e-0fccb5392471")
+                .build();
+
+        orderEntity = OrderEntity.builder()
+                .id(UUID.fromString("82a68f02-d0f8-4e1a-900e-0fccb5392471"))
+                .status(EnumOrderStatus.OPEN)
                 .build();
     }
 
     @Test
     @DisplayName("Deve validar o item do pedido com sucesso")
     void validate() {
-        assertDoesNotThrow(() -> orderItemValidator.validate(orderItemRequest));
+        assertDoesNotThrow(() -> orderItemValidator.validate(orderItemRequest, orderEntity));
     }
 
     @ParameterizedTest
@@ -51,11 +60,11 @@ class OrderItemValidatorTest {
 
         orderItemRequest = OrderItemRequest.builder()
                 .quantity(quantity)
-                .productId(productId)
+                .catalogItemId(productId)
                 .orderId(orderId)
                 .build();
 
-        Exception exception = assertThrows(Exception.class, () -> orderItemValidator.validate(orderItemRequest));
+        Exception exception = assertThrows(Exception.class, () -> orderItemValidator.validate(orderItemRequest, orderEntity));
         assert(exception.getMessage().contains(expectedMessage));
     }
 

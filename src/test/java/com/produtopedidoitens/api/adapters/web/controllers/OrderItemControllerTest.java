@@ -3,6 +3,7 @@ package com.produtopedidoitens.api.adapters.web.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
+import com.produtopedidoitens.api.adapters.web.requests.OrderItemUpdateRequest;
 import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
@@ -49,6 +50,7 @@ class OrderItemControllerTest {
     private OrderItemInputPort orderItemInputPort;
 
     private OrderItemRequest orderItemRequest;
+    private OrderItemUpdateRequest orderItemUpdateRequest;
     private OrderItemResponse orderItemResponse;
     private OrderItemProjection orderItemProjection;
 
@@ -64,23 +66,27 @@ class OrderItemControllerTest {
                 .build();
 
         orderItemRequest = OrderItemRequest.builder()
-                .productId("2104a849-13c4-46f7-8e11-a7bf2504ba46")
+                .catalogItemId("2104a849-13c4-46f7-8e11-a7bf2504ba46")
                 .quantity("1")
                 .orderId("e683586e-0b2d-4da7-8605-a0d9b3b307d6")
                 .build();
 
         orderItemResponse = OrderItemResponse.builder()
                 .id(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
-                .product(catalogItemResponse)
+                .catalogItem(catalogItemResponse)
                 .quantity(1)
                 .version(0L)
                 .build();
 
         orderItemProjection = OrderItemProjection.builder()
                 .id(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
-                .productName(catalogItemResponse.catalogItemName())
+                .catalogItemName(catalogItemResponse.catalogItemName())
                 .quantity(1)
                 .price(catalogItemResponse.price())
+                .build();
+
+        orderItemUpdateRequest = OrderItemUpdateRequest.builder()
+                .quantity("2")
                 .build();
     }
 
@@ -167,12 +173,12 @@ class OrderItemControllerTest {
     @Test
     @DisplayName("Deve atualizar um item de pedido")
     void testUpdate() throws Exception {
-        when(orderItemInputPort.updateOrderItem(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), orderItemRequest))
+        when(orderItemInputPort.updateOrderItem(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), orderItemUpdateRequest))
                 .thenReturn(orderItemResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL + "/123e4567-e89b-12d3-a456-426614174000")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(orderItemRequest)))
+                .content(objectMapper.writeValueAsString(orderItemUpdateRequest)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(orderItemResponse)));
@@ -181,12 +187,13 @@ class OrderItemControllerTest {
     @Test
     @DisplayName("Deve retornar erro ao atualizar um item de pedido")
     void testUpdateError() throws Exception {
-        when(orderItemInputPort.updateOrderItem(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), orderItemRequest))
+        when(orderItemInputPort.updateOrderItem(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), orderItemUpdateRequest))
                 .thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER_ITEM));
+
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL + "/123e4567-e89b-12d3-a456-426614174000")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(orderItemRequest)))
+                        .content(objectMapper.writeValueAsString(orderItemUpdateRequest)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Erro ao atualizar item do pedido\"}"));

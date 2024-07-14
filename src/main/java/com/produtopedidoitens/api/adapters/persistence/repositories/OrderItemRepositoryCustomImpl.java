@@ -28,6 +28,7 @@ public class OrderItemRepositoryCustomImpl implements OrderItemRepositoryCustom 
         return queryFactory
                 .select(Projections.constructor(OrderByOrderNumber.class,
                         catalogItem.catalogItemName,
+                        catalogItem.catalogItemDescription,
                         order.orderNumber,
                         order.status.stringValue(),
                         orderItem.quantity,

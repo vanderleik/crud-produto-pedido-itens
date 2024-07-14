@@ -51,7 +51,7 @@ class OrderItemConverterTest {
     void requestToEntity() {
         OrderItemRequest orderItemRequest = OrderItemRequest.builder()
                 .quantity("1")
-                .productId(catalogItemEntity.getId().toString())
+                .catalogItemId(catalogItemEntity.getId().toString())
                 .orderId(orderEntity.getId().toString())
                 .build();
 
@@ -69,7 +69,7 @@ class OrderItemConverterTest {
         assertNotNull(response);
         assertEquals(orderItemEntity.getId(), response.id());
         assertEquals(orderItemEntity.getQuantity(), response.quantity());
-        assertEquals(orderItemEntity.getCatalogItem().getCatalogItemName(), response.productName());
+        assertEquals(orderItemEntity.getCatalogItem().getCatalogItemName(), response.catalogItemName());
     }
 
     @Test
@@ -79,6 +79,6 @@ class OrderItemConverterTest {
         assertNotNull(response);
         assertEquals(orderItemEntity.getId(), response.id());
         assertEquals(orderItemEntity.getQuantity(), response.quantity());
-        assertEquals(orderItemEntity.getCatalogItem().getId(), response.product().id());
+        assertEquals(orderItemEntity.getCatalogItem().getId(), response.catalogItem().id());
     }
 }

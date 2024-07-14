@@ -1,19 +1,20 @@
 package com.produtopedidoitens.api.application.services;
 
+import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
-import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
+import com.produtopedidoitens.api.adapters.web.requests.OrderItemUpdateRequest;
 import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
-import com.produtopedidoitens.api.application.exceptions.BadRequestException;
-import com.produtopedidoitens.api.application.mapper.OrderItemConverter;
 import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
 import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.application.exceptions.BadRequestException;
+import com.produtopedidoitens.api.application.mapper.OrderItemConverter;
 import com.produtopedidoitens.api.application.validators.OrderItemValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,6 +58,7 @@ class OrderItemIServiceImplTest {
     private CatalogItemEntity productEntity;
     private OrderItemResponse orderItemResponse;
     private OrderItemRequest orderItemRequest;
+    private OrderItemUpdateRequest orderItemUpdateRequest;
     private OrderItemEntity orderItemEntity;
     private OrderItemProjection orderItemProjection;
     private OrderEntity orderEntity;
@@ -114,29 +116,33 @@ class OrderItemIServiceImplTest {
 
         orderItemRequest = OrderItemRequest.builder()
                 .quantity("10")
-                .productId("2fda9391-82bf-452c-80f7-e93d9c4898df")
+                .catalogItemId("2fda9391-82bf-452c-80f7-e93d9c4898df")
                 .orderId(String.valueOf(orderEntity.getId()))
                 .build();
 
         orderItemResponse = OrderItemResponse.builder()
                 .id(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))
-                .product(product)
+                .catalogItem(product)
                 .quantity(10)
                 .version(0L)
                 .build();
 
         orderItemProjection = OrderItemProjection.builder()
                 .id(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))
-                .productName("Product 1")
+                .catalogItemName("Product 1")
                 .price(BigDecimal.valueOf(100.0))
                 .quantity(10)
+                .build();
+
+        orderItemUpdateRequest = OrderItemUpdateRequest.builder()
+                .quantity("5")
                 .build();
     }
 
     @Test
     @DisplayName("Deve criar um item do pedido")
     void testCreate() {
-        when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.of(productEntity));
+        when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.catalogItemId()))).thenReturn(Optional.of(productEntity));
         when(orderItemConverter.requestToEntity(orderItemRequest, productEntity, orderEntity)).thenReturn(orderItemEntity);
         when(orderItemRepository.save(orderItemEntity)).thenReturn(orderItemEntity);
         when(orderRepository.findById(UUID.fromString(orderItemRequest.orderId()))).thenReturn(Optional.of(orderEntity));
@@ -145,7 +151,7 @@ class OrderItemIServiceImplTest {
         OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.createOrderItem(orderItemRequest));
         assertNotNull(response);
         assertEquals(orderItemResponse, response);
-        verify(catalogItemRepository, times(2)).findById(UUID.fromString(orderItemRequest.productId()));
+        verify(catalogItemRepository, times(2)).findById(UUID.fromString(orderItemRequest.catalogItemId()));
         verify(orderItemConverter).requestToEntity(orderItemRequest, productEntity, orderEntity);
         verify(orderItemRepository).save(orderItemEntity);
         verify(orderItemConverter).toResponse(orderItemEntity);
@@ -154,10 +160,8 @@ class OrderItemIServiceImplTest {
     @Test
     @DisplayName("Deve lançar exceção ao criar um item do pedido")
     void testCreateError() {
-        when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.empty());
-
         Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.createOrderItem(orderItemRequest));
-        assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
+        assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
     }
 
     @Test
@@ -210,17 +214,15 @@ class OrderItemIServiceImplTest {
     @DisplayName("Deve atualizar um item do pedido")
     void testUpdate() {
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.of(orderItemEntity));
-        when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.of(productEntity));
         when(orderItemRepository.save(orderItemEntity)).thenReturn(orderItemEntity);
         when(orderItemConverter.toResponse(orderItemEntity)).thenReturn(orderItemResponse);
 
-        OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
+        OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl
+                .updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemUpdateRequest));
         assertNotNull(response);
         assertEquals(orderItemResponse, response);
         verify(orderItemRepository).findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"));
-        verify(catalogItemRepository).findById(UUID.fromString(orderItemRequest.productId()));
         verify(orderItemRepository).save(orderItemEntity);
-        verify(orderItemConverter).toResponse(orderItemEntity);
     }
 
     @Test
@@ -228,20 +230,19 @@ class OrderItemIServiceImplTest {
     void testUpdateError() {
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
+        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl
+                .updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemUpdateRequest));
         assertEquals(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND, exception.getMessage());
 
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.of(orderItemEntity));
-        when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.empty());
+        when(orderItemRepository.save(orderItemEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER_ITEM));
 
-        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
-        assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
+        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl
+                .updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemUpdateRequest));
+        assertEquals(MessagesConstants.ERROR_UPDATE_ORDER_ITEM, exception.getMessage());
 
-        when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.of(productEntity));
-        when(orderItemRepository.save(orderItemEntity)).thenReturn(orderItemEntity);
-        when(orderItemConverter.toResponse(orderItemEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER_ITEM));
-
-        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
+        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl
+                .updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemUpdateRequest));
         assertEquals(MessagesConstants.ERROR_UPDATE_ORDER_ITEM, exception.getMessage());
     }
 
