@@ -1,6 +1,8 @@
 package com.produtopedidoitens.api.adapters.web.filters;
 
 import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.application.mapper.EnumConverter;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -17,12 +19,11 @@ public class ProductFilter {
             }
 
             if (type != null && !type.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("type"), type));
+                EnumCatalogItemType enumType = EnumConverter.fromString(type, EnumCatalogItemType.class);
+                predicates.add(criteriaBuilder.equal(root.get("type"), enumType));
             }
 
-            predicates.add(criteriaBuilder.equal(root.get("active"), isActive));
-
-
+            predicates.add(criteriaBuilder.equal(root.get("isActive"), isActive));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

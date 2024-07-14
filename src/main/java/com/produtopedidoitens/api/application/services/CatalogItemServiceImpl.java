@@ -2,11 +2,11 @@ package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
-import com.produtopedidoitens.api.adapters.web.filters.ProductFilter;
 import com.produtopedidoitens.api.adapters.web.projections.CatalogItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.CatalogItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
 import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.application.domain.entities.QCatalogItemEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
@@ -15,12 +15,13 @@ import com.produtopedidoitens.api.application.mapper.ProductConverter;
 import com.produtopedidoitens.api.application.port.CatalogItemInputPort;
 import com.produtopedidoitens.api.application.validators.CatalogItemValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,24 +90,33 @@ public class CatalogItemServiceImpl implements CatalogItemInputPort {
         }
     }
 
+
+
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Page<CatalogItemProjection> getItemsWithFilters(String productName, String type, boolean active, Pageable pageable) {
+    public List<CatalogItemEntity> getItemsWithFilters(String catalogItemName, Boolean isActive) {
         log.info("getItemsWithFilters:: Recebendo requisição para buscar produtos/serviços com filtros");
-        Specification<CatalogItemEntity> specification = ProductFilter.filterByCriteria(productName, type, active);
-        Page<CatalogItemEntity> productPage = catalogItemRepository.findAll(specification, pageable);
-        return productPage.map(product -> new CatalogItemProjection(
-                product.getId(),
-                product.getCatalogItemName(),
-                product.getCatalogItemDescription(),
-                product.getCatalogItemNumber(),
-                product.getPrice(),
-                product.getType().toString(),
-                product.getIsActive(),
-                product.getDthreg(),
-                product.getDthalt(),
-                product.getVersion()
-            ));
+        QCatalogItemEntity qCatalogItem = QCatalogItemEntity.catalogItemEntity;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        boolean hasFilters = false;
+
+        if (catalogItemName != null && !catalogItemName.isEmpty()) {
+            builder.and(qCatalogItem.catalogItemName.containsIgnoreCase(catalogItemName));
+            hasFilters = true;
+        }
+
+        if (isActive != null) {
+            builder.and(qCatalogItem.isActive.eq(isActive));
+            hasFilters = true;
+        }
+
+        if (hasFilters) {
+            Predicate predicate = builder.getValue();
+            return (List<CatalogItemEntity>) catalogItemRepository.findAll(predicate);
+        } else {
+            return catalogItemRepository.findAll();
+        }
     }
 
     @Override

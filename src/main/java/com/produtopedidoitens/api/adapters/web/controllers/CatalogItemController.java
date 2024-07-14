@@ -3,6 +3,7 @@ package com.produtopedidoitens.api.adapters.web.controllers;
 import com.produtopedidoitens.api.adapters.web.projections.CatalogItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.CatalogItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
+import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
 import com.produtopedidoitens.api.application.port.CatalogItemInputPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Itens", description = "API de itens (Produtos e Serviços")
@@ -81,14 +83,11 @@ public class CatalogItemController {
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor",
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
-    @GetMapping("/filter")
-    public ResponseEntity<Page<CatalogItemProjection>> getItemsWithFilters(@RequestParam(required = false) String catalogItemName,
-                                                                           @RequestParam(required = false) String type,
-                                                                           @RequestParam(required = false) boolean isActive,
-                                                                           Pageable pageable) {
-        log.info("getItemsWithFilters:: Recebendo requisição para buscar itens com filtros");
-        Page<CatalogItemProjection> products = catalogItemInputPort.getItemsWithFilters(catalogItemName, type, isActive, pageable);
-        return ResponseEntity.ok(products);
+    @GetMapping("/catalog-items")
+    public List<CatalogItemEntity> getCatalogItems(
+            @RequestParam(required = false) String catalogItemName,
+            @RequestParam(required = false) Boolean isActive) {
+        return catalogItemInputPort.getItemsWithFilters(catalogItemName, isActive);
     }
 
     @Operation(summary = "Endpoint responsável por atualizar um item")
