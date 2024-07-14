@@ -14,6 +14,7 @@ Este projeto é um CRUD (Create, Read, Update e Delete), construído para permit
 - PostgreSQL
 - Docker
 - REST com JSON
+- JaCoCo
 
 ## Pré-requisitos
 
@@ -26,19 +27,14 @@ Certifique-se de ter instalado em sua máquina:
 ## Como Baixar o Repositório
 
 1. Abra o terminal.
-2. Clone o repositório usando o comando:
-
-`git clone https://github.com/vanderleik/crud-produto-pedido-itens.git`
+2. Clone o repositório usando o comando: `git clone https://github.com/vanderleik/crud-produto-pedido-itens.git`
 3. Entre na pasta do projeto: `cd crud-produto-pedido-itens`
 
 ## Como Executar a Aplicação
 
-1. Inicie os serviços necessários (como o banco de dados) usando Docker Compose:
-   `docker-compose up -d`
-2. Construa o projeto com Maven:
-   `mvn clean install`
-3. Execute a aplicação:
-   `mvn spring-boot:run`
+1. Inicie os serviços necessários (como o banco de dados) usando Docker Compose: `docker-compose up -d`
+2. Construa o projeto com Maven: `mvn clean install`
+3. Execute a aplicação: `mvn spring-boot:run`
 
 ## Endpoints
 
@@ -112,6 +108,13 @@ Endpoint responsável por buscar itens de pedido com filtros
 
 1. Com a aplicação em execução, acesse <a href="http://localhost:8080/swagger-ui.html">`http://localhost:8080/swagger-ui.html`</a> no seu navegador.
 2. Você verá a interface do Swagger, onde poderá testar todos os endpoints disponíveis.
+
+## Observações
+
+O projeto possui testes unitários e de integração, que podem ser executados com o comando `mvn test`. Ao executar o comando `mvn clean verify`, os testes são executados automaticamente e um relatório de cobertura de testes é gerado pelo JaCoCo, que pode ser acessado em: `target/site/jacoco/index.html`.
+<br>
+Este é um exemplo do relatório obtido ao final da execução dos testes:
+![img.png](img.png)
 
 ## Licença
 
