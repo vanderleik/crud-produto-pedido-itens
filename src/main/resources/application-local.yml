@@ -24,3 +24,7 @@ spring:
 
   config:
     import: optional:file:.env[.*]
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
