@@ -99,6 +99,7 @@ public class CatalogItemServiceImpl implements CatalogItemInputPort {
                 product.getId(),
                 product.getCatalogItemName(),
                 product.getCatalogItemDescription(),
+                product.getCatalogItemNumber(),
                 product.getPrice(),
                 product.getType().toString(),
                 product.getIsActive(),

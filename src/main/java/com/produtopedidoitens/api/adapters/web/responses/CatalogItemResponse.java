@@ -18,6 +18,9 @@ public record CatalogItemResponse(
         @Schema(description = "Descrição do item", example = "Café 100% arábica")
         String catalogItemDescription,
 
+        @Schema(description = "Código do item cadastrado", example = "123456")
+        String catalogItemNumber,
+
         @Schema(description = "Preço do Item", example = "28.00")
         BigDecimal price,
 

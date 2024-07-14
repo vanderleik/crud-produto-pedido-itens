@@ -8,6 +8,7 @@ import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Random;
 
 @Component
 public class ProductConverter {
@@ -17,6 +18,7 @@ public class ProductConverter {
         return CatalogItemEntity.builder()
                 .catalogItemName(catalogItemRequest.catalogItemName())
                 .catalogItemDescription(catalogItemRequest.catalogItemDescription())
+                .catalogItemNumber(getCatalogItemNumber())
                 .price(new BigDecimal(catalogItemRequest.price()))
                 .type(EnumConverter.fromString(catalogItemRequest.type(), EnumCatalogItemType.class))
                 .isActive(Boolean.parseBoolean(catalogItemRequest.isActive()))
@@ -28,6 +30,7 @@ public class ProductConverter {
                 .id(entitySaved.getId())
                 .catalogItemName(entitySaved.getCatalogItemName())
                 .catalogItemDescription(entitySaved.getCatalogItemDescription())
+                .catalogItemNumber(entitySaved.getCatalogItemNumber())
                 .price(entitySaved.getPrice())
                 .type(EnumConverter.toString(entitySaved.getType()))
                 .isActive(entitySaved.getIsActive())
@@ -40,10 +43,18 @@ public class ProductConverter {
                 .id(catalogItemEntity.getId())
                 .catalogItemName(catalogItemEntity.getCatalogItemName())
                 .catalogItemDescription(catalogItemEntity.getCatalogItemDescription())
+                .catalogItemNumber(catalogItemEntity.getCatalogItemNumber())
                 .price(catalogItemEntity.getPrice())
                 .type(EnumConverter.toString(catalogItemEntity.getType()))
                 .isActive(catalogItemEntity.getIsActive())
                 .version(catalogItemEntity.getVersion())
                 .build();
     }
+
+    private String getCatalogItemNumber() {
+        Random random = new Random();
+        int randomNumber = random.nextInt(999999);
+        return Integer.toString(randomNumber);
+    }
+
 }
