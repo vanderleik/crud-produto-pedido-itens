@@ -3,6 +3,7 @@ package com.produtopedidoitens.api.adapters.web.controllers;
 import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.application.port.OrderInputPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Order", description = "API de pedidos")
@@ -82,12 +84,10 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @GetMapping("/filter")
-    public ResponseEntity<Page<OrderProjection>> getItemsWithFilters(@RequestParam(required = false) String orderNumber,
-                                                                       @RequestParam(required = false) String status,
-                                                                       Pageable pageable) {
-        log.info("getItemsWithFilters:: Recebendo requisição para buscar orderns com filtros");
-        Page<OrderProjection> orders = orderInputPort.getItemsWithFilters(orderNumber, status, pageable);
-        return ResponseEntity.ok(orders);
+    public List<OrderProjection> getOrders(
+            @RequestParam(required = false) String orderNumber,
+            @RequestParam(required = false) EnumOrderStatus status) {
+        return orderInputPort.searchOrders(orderNumber, status);
     }
 
     @Operation(summary = "Endpoint responsável por atualizar um pedido")

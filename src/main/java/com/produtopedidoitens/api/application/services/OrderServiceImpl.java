@@ -1,11 +1,11 @@
 package com.produtopedidoitens.api.application.services;
 
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
-import com.produtopedidoitens.api.adapters.web.filters.OrderFilter;
 import com.produtopedidoitens.api.adapters.web.projections.OrderProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderResponse;
 import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.application.domain.entities.QOrderEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
@@ -14,12 +14,13 @@ import com.produtopedidoitens.api.application.mapper.OrderConverter;
 import com.produtopedidoitens.api.application.port.OrderInputPort;
 import com.produtopedidoitens.api.application.validators.OrderValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,20 +106,31 @@ public class OrderServiceImpl implements OrderInputPort {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Page<OrderProjection> getItemsWithFilters(String orderNumber, String status, Pageable pageable) {
-        log.info("getItemsWithFilters:: Recebendo requisição para buscar pedidos com filtros");
-        Specification<OrderEntity> specification = OrderFilter.filterByCriteria(orderNumber, status);
-        Page<OrderEntity> orderPage = orderRepository.findAll(specification, pageable);
-        return orderPage.map(order -> new OrderProjection(
-                order.getId(),
-                order.getOrderNumber(),
-                order.getOrderDate(),
-                order.getStatus().toString(),
-                null, //TODO order.getItems(),
-                order.getGrossTotal(),
-                order.getDiscount(),
-                order.getNetTotal()
-        ));
+    public List<OrderProjection> searchOrders(String orderNumber, EnumOrderStatus status) {
+        log.info("searchOrders:: Buscando pedidos por filtro: orderNumber: {}, status: {}", orderNumber, status);
+        QOrderEntity qOrderEntity = QOrderEntity.orderEntity;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        boolean hasFilters = false;
+
+        if (orderNumber != null && !orderNumber.isEmpty()) {
+            builder.and(qOrderEntity.orderNumber.containsIgnoreCase(orderNumber));
+            hasFilters = true;
+        }
+
+        if (status != null) {
+            builder.and(qOrderEntity.status.eq(status));
+            hasFilters = true;
+        }
+
+        if (hasFilters) {
+            Predicate predicate = builder.getValue();
+            List<OrderEntity> listFiltered = (List<OrderEntity>) orderRepository.findAll(predicate);
+            return  listFiltered.stream().map(orderConverter::toProjection).toList();
+        } else {
+            List<OrderEntity> list = orderRepository.findAll();
+            return list.stream().map(orderConverter::toProjection).toList();
+        }
     }
 
     private static void updateEntity(OrderEntity entity, OrderRequest orderRequest) {
