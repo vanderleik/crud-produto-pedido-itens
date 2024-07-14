@@ -7,7 +7,7 @@ import lombok.Builder;
 public record OrderItemRequest(
 
         @Schema(description = "Quantidade do produto em unidades inteiras", example = "10", required = true)
-        Integer quantity,
+        String quantity,
 
         @Schema(description = "Id do produto obtido ao cadastrar um produto", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", required = true)
         String productId,

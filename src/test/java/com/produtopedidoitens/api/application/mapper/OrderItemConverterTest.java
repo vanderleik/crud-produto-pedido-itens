@@ -50,14 +50,14 @@ class OrderItemConverterTest {
     @Test
     void requestToEntity() {
         OrderItemRequest orderItemRequest = OrderItemRequest.builder()
-                .quantity(1)
+                .quantity("1")
                 .productId(catalogItemEntity.getId().toString())
                 .orderId(orderEntity.getId().toString())
                 .build();
 
         OrderItemEntity response = assertDoesNotThrow(() -> orderItemConverter.requestToEntity(orderItemRequest, catalogItemEntity, orderEntity));
         assertNotNull(response);
-        assertEquals(orderItemRequest.quantity(), response.getQuantity());
+        assertEquals(Integer.parseInt(orderItemRequest.quantity()), response.getQuantity());
         assertEquals(catalogItemEntity.getId(), response.getCatalogItem().getId());
         assertEquals(orderEntity.getId(), response.getOrder().getId());
     }

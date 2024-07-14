@@ -3,7 +3,6 @@ package com.produtopedidoitens.api.adapters.web.responses;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -26,12 +25,6 @@ public record OrderItemResponse(
 
         @Schema(description = "Quantidade do item do pedido (em unidades)", example = "1")
         Integer quantity,
-
-        @Schema(description = "Data e hora de registro do item do pedido", example = "2024-07-11T19:45:27.386352")
-        LocalDateTime dthreg,
-
-        @Schema(description = "Data e hora da última alteração do item do pedido", example = "2024-07-11T19:45:27.386352")
-        LocalDateTime dthalt,
 
         @Schema(description = "Versão do item do pedido", example = "0")
         Long version

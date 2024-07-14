@@ -3,8 +3,8 @@ package com.produtopedidoitens.api.adapters.web.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
-import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
 import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
+import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.port.OrderItemInputPort;
@@ -27,7 +27,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,7 +65,7 @@ class OrderItemControllerTest {
 
         orderItemRequest = OrderItemRequest.builder()
                 .productId("2104a849-13c4-46f7-8e11-a7bf2504ba46")
-                .quantity(1)
+                .quantity("1")
                 .orderId("e683586e-0b2d-4da7-8605-a0d9b3b307d6")
                 .build();
 
@@ -74,8 +73,6 @@ class OrderItemControllerTest {
                 .id(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
                 .product(catalogItemResponse)
                 .quantity(1)
-                .dthreg(LocalDateTime.now())
-                .dthalt(LocalDateTime.now())
                 .version(0L)
                 .build();
 

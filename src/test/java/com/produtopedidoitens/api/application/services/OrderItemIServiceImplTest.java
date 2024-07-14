@@ -14,6 +14,7 @@ import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
 import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.application.validators.OrderItemValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,8 @@ class OrderItemIServiceImplTest {
     private OrderItemConverter orderItemConverter;
     @Mock
     private OrderRepository orderRepository;
+    @Mock
+    private OrderItemValidator orderItemValidator;
 
     private CatalogItemEntity productEntity;
     private OrderItemResponse orderItemResponse;
@@ -110,7 +113,7 @@ class OrderItemIServiceImplTest {
                 .build();
 
         orderItemRequest = OrderItemRequest.builder()
-                .quantity(10)
+                .quantity("10")
                 .productId("2fda9391-82bf-452c-80f7-e93d9c4898df")
                 .orderId(String.valueOf(orderEntity.getId()))
                 .build();
@@ -119,8 +122,6 @@ class OrderItemIServiceImplTest {
                 .id(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))
                 .product(product)
                 .quantity(10)
-                .dthreg(LocalDateTime.now())
-                .dthalt(LocalDateTime.now())
                 .version(0L)
                 .build();
 
@@ -156,7 +157,7 @@ class OrderItemIServiceImplTest {
         when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.create(orderItemRequest));
-        assertEquals(MessagesConstants.ERROR_SAVE_ORDER_ITEM, exception.getMessage());
+        assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
