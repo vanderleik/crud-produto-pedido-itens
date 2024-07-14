@@ -40,7 +40,7 @@ public class OrderEntity {
     @Column(name = "orderdate")
     private LocalDate orderDate;
 
-    @NotNull(message = MessagesConstants.ORDER_DATE_STATUS_NOT_NULL)
+    @NotNull(message = MessagesConstants.ORDER_STATUS_NOT_NULL)
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private EnumOrderStatus status;

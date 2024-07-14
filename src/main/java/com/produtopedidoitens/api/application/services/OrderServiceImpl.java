@@ -12,6 +12,7 @@ import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.mapper.EnumConverter;
 import com.produtopedidoitens.api.application.mapper.OrderConverter;
 import com.produtopedidoitens.api.application.port.OrderInputPort;
+import com.produtopedidoitens.api.application.validators.OrderValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +34,14 @@ public class OrderServiceImpl implements OrderInputPort {
 
     private final OrderRepository orderRepository;
     private final OrderConverter orderConverter;
+    private final OrderValidator orderValidator;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public OrderResponse create(OrderRequest orderRequest) {
         log.info("create:: Recebendo OrderRequest: {}", orderRequest);
+        orderValidator.validate(orderRequest);
+
         try {
             OrderEntity entitySaved = orderRepository.save(getEntity(orderRequest));
             OrderResponse response = orderConverter.toResponse(entitySaved);

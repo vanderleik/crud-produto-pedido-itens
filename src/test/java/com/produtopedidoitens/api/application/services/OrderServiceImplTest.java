@@ -8,6 +8,7 @@ import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.mapper.OrderConverter;
+import com.produtopedidoitens.api.application.validators.OrderValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +41,8 @@ class OrderServiceImplTest {
     private OrderRepository orderRepository;
     @Mock
     private OrderConverter orderConverter;
+    @Mock
+    private OrderValidator orderValidator;
 
     private OrderRequest orderRequest;
     private OrderResponse orderResponse;
@@ -59,8 +62,6 @@ class OrderServiceImplTest {
                 .orderDate(LocalDate.now())
                 .status("Aberto")
                 .discount(BigDecimal.valueOf(0.00))
-                .dthreg(LocalDateTime.now())
-                .dthalt(LocalDateTime.now())
                 .version(0L)
                 .build();
 
