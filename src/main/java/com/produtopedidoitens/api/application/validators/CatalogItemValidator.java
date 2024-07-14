@@ -59,6 +59,10 @@ public class CatalogItemValidator {
     }
 
     private static Boolean isNumberOrText(String price) {
+        if (price.matches("\\d+")) {
+            return false;
+        }
+
         for (char caractere : price.toCharArray()) {
             if (!Character.isDigit(caractere) && !Character.isLetter(caractere)) {
                 return false;

@@ -14,7 +14,7 @@ public class OrderItemConverter {
 
     public OrderItemEntity requestToEntity(OrderItemRequest orderItemRequest, CatalogItemEntity catalogItemEntity, OrderEntity orderEntity) {
         return OrderItemEntity.builder()
-                .quantity(orderItemRequest.quantity())
+                .quantity(Integer.parseInt(orderItemRequest.quantity()))
                 .catalogItem(catalogItemEntity)
                 .order(orderEntity)
                 .build();
@@ -42,8 +42,6 @@ public class OrderItemConverter {
                         .version(entitySaved.getCatalogItem().getVersion())
                         .build())
                 .quantity(entitySaved.getQuantity())
-                .dthreg(entitySaved.getDthreg())
-                .dthalt(entitySaved.getDthalt())
                 .version(entitySaved.getVersion())
                 .build();
     }

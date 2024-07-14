@@ -20,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-@Tag(name = "OrderItem", description = "API de itens de pedido")
+@Tag(name = "OrderItem", description = "API de itens do pedido")
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orderitems")

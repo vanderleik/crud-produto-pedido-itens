@@ -18,6 +18,7 @@ import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
 import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
 import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
+import com.produtopedidoitens.api.application.validators.OrderItemValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +41,14 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     private final CatalogItemRepository catalogItemRepository;
     private final OrderRepository orderRepository;
     private final OrderItemConverter orderItemConverter;
+    private final OrderItemValidator orderItemValidator;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public OrderItemResponse create(OrderItemRequest orderItemRequest) {
         log.info("create:: Recebendo orderItemRequest: {}", orderItemRequest);
+        orderItemValidator.validate(orderItemRequest);
+
         try {
             OrderItemEntity orderItemEntity = getOrderItemEntity(orderItemRequest);
             setGrossTotal(orderItemEntity);
@@ -56,8 +60,8 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
             return response;
 
         } catch (Exception e) {
-         log.error("create:: Ocorreu um erro ao salvar o item do pedido");
-            throw new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER_ITEM);
+         log.error("create:: Ocorreu um erro ao salvar o item do pedido: {}", e.getMessage());
+            throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -114,7 +118,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
         OrderItemEntity entity = getOrderItemEntity(id);
         try {
             orderItemRepository.delete(entity);
-            log.info("delete:: Deletando item do pedido: {}", entity);
+            log.info("delete:: Deletando item do pedido");
         } catch (Exception e) {
             log.error("delete:: Ocorreu um erro ao deletar o item do pedido");
             throw new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER_ITEM);
@@ -186,7 +190,7 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     }
 
     private void updateEntity(OrderItemEntity entity, OrderItemRequest orderItemRequest) {
-        entity.setQuantity(orderItemRequest.quantity() == null ? entity.getQuantity() : orderItemRequest.quantity());
+        entity.setQuantity(orderItemRequest.quantity() == null ? entity.getQuantity() : Integer.parseInt(orderItemRequest.quantity()));
         entity.setCatalogItem(orderItemRequest.productId() == null ? entity.getCatalogItem() : getProdutoEntity(orderItemRequest.productId()));
     }
 

@@ -40,6 +40,9 @@ public class MessagesConstants {
     public static final String ERROR_ORDER_ITEM_NOT_FOUND_BY_ORDER_NUMBER = "Nenhum item de pedido encontrado para o número do pedido informado";
     public static final String ERROR_PRODUCT_NOT_ACTIVE = "O produto/serviço informado não está ativo";
     public static final String PRODUCT_TYPE_PRODUCT_SERVICE = "O tipo do produto/serviço deve ser Produto ou Serviço";
+    public static final String ORDER_ITEM_CATALOG_ITEM_ID_NOT_NULL = "O id do produto/serviço deve ser preenchido";
+    public static final String ORDER_ITEM_ORDER_ID_NOT_NULL = "O id do pedido deve ser preenchido";
+    public static final String ORDER_ITEM_QUANTITY_NUMBER = "A quantidade do item do pedido deve ser um valor numérico positivo";
 
     private MessagesConstants() {
     }
