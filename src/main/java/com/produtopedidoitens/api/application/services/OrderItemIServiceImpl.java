@@ -1,23 +1,23 @@
 package com.produtopedidoitens.api.application.services;
 
+import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.OrderRepository;
-import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
 import com.produtopedidoitens.api.adapters.web.projections.OrderByOrderNumber;
 import com.produtopedidoitens.api.adapters.web.projections.OrderItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.OrderItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.OrderItemResponse;
+import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
+import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
+import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.exceptions.OrderItemNotFoundException;
 import com.produtopedidoitens.api.application.exceptions.OrderNotFoundException;
 import com.produtopedidoitens.api.application.exceptions.ProductNotFoundException;
 import com.produtopedidoitens.api.application.mapper.OrderItemConverter;
 import com.produtopedidoitens.api.application.port.OrderItemInputPort;
-import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
-import com.produtopedidoitens.api.application.domain.entities.OrderEntity;
-import com.produtopedidoitens.api.application.domain.entities.OrderItemEntity;
-import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
-import com.produtopedidoitens.api.application.domain.enums.EnumOrderStatus;
 import com.produtopedidoitens.api.application.validators.OrderItemValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,8 +46,8 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public OrderItemResponse create(OrderItemRequest orderItemRequest) {
-        log.info("create:: Recebendo orderItemRequest: {}", orderItemRequest);
+    public OrderItemResponse createOrderItem(OrderItemRequest orderItemRequest) {
+        log.info("createOrderItem:: Recebendo orderItemRequest: {}", orderItemRequest);
         orderItemValidator.validate(orderItemRequest);
 
         try {
@@ -56,29 +57,29 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
 
             OrderItemEntity entitySaved = orderItemRepository.save(orderItemEntity);
             OrderItemResponse response = orderItemConverter.toResponse(entitySaved);
-            log.info("create:: Salvando item do pedido: {}", response);
+            log.info("createOrderItem:: Salvando item do pedido: {}", response);
             return response;
 
         } catch (Exception e) {
-         log.error("create:: Ocorreu um erro ao salvar o item do pedido: {}", e.getMessage());
+         log.error("createOrderItem:: Ocorreu um erro ao salvar o item do pedido: {}", e.getMessage());
             throw new BadRequestException(e.getMessage());
         }
     }
 
     @Override
-    public Page<OrderItemProjection> list(Pageable pageable) {
-        log.info("list:: Listando itens do pedido");
+    public Page<OrderItemProjection> listAllOrderItems(Pageable pageable) {
+        log.info("listAllOrderItems:: Listando itens do pedido");
         List<OrderItemEntity> list = getOrderItemEntities();
-        log.info("list:: Itens do pedido encontrados: {}", list);
+        log.info("listAllOrderItems:: Itens do pedido encontrados: {}", list);
         List<OrderItemProjection> orderItemProjectionList = list.stream().map(orderItemConverter::toProjection).toList();
         return new PageImpl<>(orderItemProjectionList, pageable, orderItemProjectionList.size());
     }
 
     @Override
-    public OrderItemProjection read(UUID id) {
-        log.info("read:: Buscando item do pedido por id: {}", id);
+    public OrderItemProjection getOrderItemById(UUID id) {
+        log.info("getOrderItemById:: Buscando item do pedido por id: {}", id);
         OrderItemEntity entity = getOrderItemEntity(id);
-        log.info("read:: Item do pedido encontrado: {}", entity);
+        log.info("getOrderItemById:: Item do pedido encontrado: {}", entity);
         return orderItemConverter.toProjection(entity);
     }
 
@@ -96,31 +97,31 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public OrderItemResponse update(UUID id, OrderItemRequest orderItemRequest) {
-        log.info("update:: Recebendo requisição para atualizar item do pedido: {}", orderItemRequest);
+    public OrderItemResponse updateOrderItem(UUID id, OrderItemRequest orderItemRequest) {
+        log.info("updateOrderItem:: Recebendo requisição para atualizar item do pedido: {}", orderItemRequest);
         OrderItemEntity entity = getOrderItemEntity(id);
         updateEntity(entity, orderItemRequest);
         try {
             OrderItemEntity entitySaved = orderItemRepository.save(entity);
             OrderItemResponse response = orderItemConverter.toResponse(entitySaved);
-            log.info("update:: Atualizando item do pedido: {}", response);
+            log.info("updateOrderItem:: Atualizando item do pedido: {}", response);
             return response;
         } catch (Exception e) {
-            log.error("update:: Ocorreu um erro ao atualizar o item do pedido");
+            log.error("updateOrderItem:: Ocorreu um erro ao atualizar o item do pedido");
             throw new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER_ITEM);
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delete(UUID id) {
+    public void deleteOrderItem(UUID id) {
         log.info("delete:: Recebendo requisição para deletar item do pedido por id: {}", id);
         OrderItemEntity entity = getOrderItemEntity(id);
         try {
             orderItemRepository.delete(entity);
-            log.info("delete:: Deletando item do pedido");
+            log.info("deleteOrderItem:: Deletando item do pedido");
         } catch (Exception e) {
-            log.error("delete:: Ocorreu um erro ao deletar o item do pedido");
+            log.error("deleteOrderItem:: Ocorreu um erro ao deletar o item do pedido");
             throw new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER_ITEM);
         }
     }
@@ -139,29 +140,29 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
     }
 
     private void setNetTotal(OrderItemRequest orderItemRequest, OrderItemEntity orderItemEntity) {
-        log.info("create:: Total bruto do pedido calculado: {}", orderItemEntity.getOrder().getGrossTotal());
+        log.info("createOrderItem:: Total bruto do pedido calculado: {}", orderItemEntity.getOrder().getGrossTotal());
         OrderEntity orderEntity = getOrderEntity(orderItemRequest.orderId());
-        log.info("create:: Total bruto do pedido calculado: {}", orderEntity.getGrossTotal());
+        log.info("createOrderItem:: Total bruto do pedido calculado: {}", orderEntity.getGrossTotal());
 
         CatalogItemEntity catalogItemEntity = getProdutoEntity(orderItemRequest.productId());
 
         if (EnumOrderStatus.OPEN.equals(orderEntity.getStatus())) {
             if (EnumCatalogItemType.PRODUCT.equals(catalogItemEntity.getType())) {
-                BigDecimal discountPercent = orderEntity.getDiscount().divide(BigDecimal.valueOf(100)).setScale(4, BigDecimal.ROUND_HALF_EVEN);
+                BigDecimal discountPercent = orderEntity.getDiscount().divide(BigDecimal.valueOf(100.00), 4, RoundingMode.HALF_EVEN);
                 BigDecimal price = catalogItemEntity.getPrice();
                 Integer quantity = orderItemEntity.getQuantity();
-                BigDecimal grossTotalItem = price.multiply(BigDecimal.valueOf(quantity)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                BigDecimal grossTotalItem = price.multiply(BigDecimal.valueOf(quantity).setScale(2, RoundingMode.HALF_EVEN));
 
-                BigDecimal discountAmount = grossTotalItem.multiply(discountPercent).setScale(2, BigDecimal.ROUND_HALF_EVEN);
-                BigDecimal netTotalItem = grossTotalItem.subtract(discountAmount).setScale(2, BigDecimal.ROUND_HALF_EVEN);
-                log.info("create:: Percentual de desconto: {}", discountPercent);
-                log.info("create:: Preço: {}", price);
-                log.info("create:: Quantidade: {}", quantity);
-                log.info("create:: Valor Total Bruto: {}", grossTotalItem);
-                log.info("create:: Desconto do item: {}", discountAmount);
-                log.info("create:: Total líquido do item calculado: {}", netTotalItem);
+                BigDecimal discountAmount = grossTotalItem.multiply(discountPercent).setScale(2, RoundingMode.HALF_EVEN);
+                BigDecimal netTotalItem = grossTotalItem.subtract(discountAmount).setScale(2, RoundingMode.HALF_EVEN);
+                log.info("createOrderItem:: Percentual de desconto: {}", discountPercent);
+                log.info("createOrderItem:: Preço: {}", price);
+                log.info("createOrderItem:: Quantidade: {}", quantity);
+                log.info("createOrderItem:: Valor Total Bruto: {}", grossTotalItem);
+                log.info("createOrderItem:: Desconto do item: {}", discountAmount);
+                log.info("createOrderItem:: Total líquido do item calculado: {}", netTotalItem);
                 BigDecimal netTotal = orderEntity.getNetTotal();
-                log.info("create:: Total líquido já adicionao ao pedido calculado: {}", netTotal);
+                log.info("createOrderItem:: Total líquido já adicionao ao pedido calculado: {}", netTotal);
                 if (netTotal == null) {
                     netTotal = BigDecimal.ZERO;
                 }
@@ -173,18 +174,18 @@ public class OrderItemIServiceImpl implements OrderItemInputPort {
             if (EnumCatalogItemType.SERVICE.equals(catalogItemEntity.getType())) {
                 BigDecimal price = catalogItemEntity.getPrice();
                 Integer quantity = orderItemEntity.getQuantity();
-                BigDecimal grossTotalItem = price.multiply(BigDecimal.valueOf(quantity)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                BigDecimal grossTotalItem = price.multiply(BigDecimal.valueOf(quantity)).setScale(2, RoundingMode.HALF_EVEN);
 
                 BigDecimal netTotalItem = grossTotalItem;
-                log.info("create:: Preço: {}", price);
-                log.info("create:: Quantidade: {}", quantity);
-                log.info("create:: Valor Total Bruto: {}", grossTotalItem);
-                log.info("create:: Total líquido do item calculado: {}", netTotalItem);
+                log.info("createOrderItem:: Preço: {}", price);
+                log.info("createOrderItem:: Quantidade: {}", quantity);
+                log.info("createOrderItem:: Valor Total Bruto: {}", grossTotalItem);
+                log.info("createOrderItem:: Total líquido do item calculado: {}", netTotalItem);
                 BigDecimal netTotal = orderEntity.getNetTotal();
-                log.info("create:: Total líquido já adicionao ao pedido calculado: {}", netTotal);
+                log.info("createOrderItem:: Total líquido já adicionao ao pedido calculado: {}", netTotal);
                 orderEntity.setNetTotal(netTotal.add(netTotalItem));
                 netTotal = orderEntity.getNetTotal();
-                log.info("create:: Total líquido adicionando os serviços: {}", netTotal);
+                log.info("createOrderItem:: Total líquido adicionando os serviços: {}", netTotal);
             }
         }
     }

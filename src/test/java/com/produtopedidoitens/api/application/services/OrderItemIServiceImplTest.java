@@ -142,7 +142,7 @@ class OrderItemIServiceImplTest {
         when(orderRepository.findById(UUID.fromString(orderItemRequest.orderId()))).thenReturn(Optional.of(orderEntity));
         when(orderItemConverter.toResponse(orderItemEntity)).thenReturn(orderItemResponse);
 
-        OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.create(orderItemRequest));
+        OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.createOrderItem(orderItemRequest));
         assertNotNull(response);
         assertEquals(orderItemResponse, response);
         verify(catalogItemRepository, times(2)).findById(UUID.fromString(orderItemRequest.productId()));
@@ -156,7 +156,7 @@ class OrderItemIServiceImplTest {
     void testCreateError() {
         when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.create(orderItemRequest));
+        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.createOrderItem(orderItemRequest));
         assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
     }
 
@@ -166,7 +166,7 @@ class OrderItemIServiceImplTest {
         when(orderItemRepository.findAll()).thenReturn(List.of(orderItemEntity));
         when(orderItemConverter.toProjection(orderItemEntity)).thenReturn(orderItemProjection);
 
-        Page<OrderItemProjection> response = assertDoesNotThrow(() -> orderItemIServiceImpl.list(PageRequest.of(0, 10)));
+        Page<OrderItemProjection> response = assertDoesNotThrow(() -> orderItemIServiceImpl.listAllOrderItems(PageRequest.of(0, 10)));
         assertNotNull(response);
         assertFalse(response.toList().isEmpty());
         assertEquals(1, response.toList().size());
@@ -180,7 +180,7 @@ class OrderItemIServiceImplTest {
     void testListError() {
         when(orderItemRepository.findAll()).thenReturn(List.of());
 
-        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.list(PageRequest.of(0, 10)));
+        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.listAllOrderItems(PageRequest.of(0, 10)));
         assertEquals(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND, exception.getMessage());
     }
 
@@ -190,7 +190,7 @@ class OrderItemIServiceImplTest {
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.of(orderItemEntity));
         when(orderItemConverter.toProjection(orderItemEntity)).thenReturn(orderItemProjection);
 
-        OrderItemProjection response = assertDoesNotThrow(() -> orderItemIServiceImpl.read(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
+        OrderItemProjection response = assertDoesNotThrow(() -> orderItemIServiceImpl.getOrderItemById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
         assertNotNull(response);
         assertEquals(orderItemProjection, response);
         verify(orderItemRepository).findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"));
@@ -202,7 +202,7 @@ class OrderItemIServiceImplTest {
     void testReadError() {
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.read(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
+        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.getOrderItemById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
         assertEquals(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND, exception.getMessage());
     }
 
@@ -214,7 +214,7 @@ class OrderItemIServiceImplTest {
         when(orderItemRepository.save(orderItemEntity)).thenReturn(orderItemEntity);
         when(orderItemConverter.toResponse(orderItemEntity)).thenReturn(orderItemResponse);
 
-        OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.update(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
+        OrderItemResponse response = assertDoesNotThrow(() -> orderItemIServiceImpl.updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
         assertNotNull(response);
         assertEquals(orderItemResponse, response);
         verify(orderItemRepository).findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"));
@@ -228,20 +228,20 @@ class OrderItemIServiceImplTest {
     void testUpdateError() {
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.update(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
+        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
         assertEquals(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND, exception.getMessage());
 
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.of(orderItemEntity));
         when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.empty());
 
-        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.update(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
+        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
         assertEquals(MessagesConstants.ERROR_PRODUCT_NOT_FOUND, exception.getMessage());
 
         when(catalogItemRepository.findById(UUID.fromString(orderItemRequest.productId()))).thenReturn(Optional.of(productEntity));
         when(orderItemRepository.save(orderItemEntity)).thenReturn(orderItemEntity);
         when(orderItemConverter.toResponse(orderItemEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER_ITEM));
 
-        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.update(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
+        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.updateOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"), orderItemRequest));
         assertEquals(MessagesConstants.ERROR_UPDATE_ORDER_ITEM, exception.getMessage());
     }
 
@@ -250,7 +250,7 @@ class OrderItemIServiceImplTest {
     void testDelete() {
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.of(orderItemEntity));
 
-        assertDoesNotThrow(() -> orderItemIServiceImpl.delete(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
+        assertDoesNotThrow(() -> orderItemIServiceImpl.deleteOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
         verify(orderItemRepository).findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"));
         verify(orderItemRepository).delete(orderItemEntity);
     }
@@ -260,13 +260,13 @@ class OrderItemIServiceImplTest {
     void testDeleteError() {
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.delete(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
+        Exception exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.deleteOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
         assertEquals(MessagesConstants.ERROR_ORDER_ITEM_NOT_FOUND, exception.getMessage());
 
         when(orderItemRepository.findById(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf"))).thenReturn(Optional.of(orderItemEntity));
         doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER_ITEM)).when(orderItemRepository).delete(orderItemEntity);
 
-        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.delete(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
+        exception = assertThrows(Exception.class, () -> orderItemIServiceImpl.deleteOrderItem(UUID.fromString("5920e4a2-4105-4af0-beec-405fddb6dbaf")));
         assertEquals(MessagesConstants.ERROR_DELETE_ORDER_ITEM, exception.getMessage());
     }
 
