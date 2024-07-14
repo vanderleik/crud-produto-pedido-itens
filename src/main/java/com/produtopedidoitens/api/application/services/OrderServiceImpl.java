@@ -136,10 +136,10 @@ public class OrderServiceImpl implements OrderInputPort {
     private static void updateEntity(OrderEntity entity, OrderRequest orderRequest) {
         entity.setOrderDate(orderRequest.orderDate() == null ? entity.getOrderDate() : orderRequest.orderDate());
         entity.setStatus(orderRequest.status() == null ? entity.getStatus() : EnumConverter.fromString(orderRequest.status(), EnumOrderStatus.class));
-//        entity.setItems(orderRequest.items() == null ? entity.getItems() : new ArrayList<>());// TODO
-//        entity.setGrossTotal(orderRequest.grossTotal() == null ? entity.getGrossTotal() : new BigDecimal(orderRequest.grossTotal()));
         entity.setDiscount(orderRequest.discount() == null ? entity.getDiscount() : new BigDecimal(orderRequest.discount()));
-//        entity.setNetTotal(orderRequest.netTotal() == null ? entity.getNetTotal() : new BigDecimal(orderRequest.netTotal()));
+        BigDecimal grossTotal = entity.getGrossTotal();
+        BigDecimal discount = entity.getDiscount().divide(BigDecimal.valueOf(100));
+        entity.setGrossTotal(grossTotal.subtract(grossTotal.multiply(discount)));
     }
 
     private OrderEntity getOrderEntity(UUID id) {
