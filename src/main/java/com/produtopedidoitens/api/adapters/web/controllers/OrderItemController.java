@@ -39,9 +39,9 @@ public class OrderItemController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PostMapping
-    public ResponseEntity<OrderItemResponse> create(@Valid @RequestBody OrderItemRequest orderItemRequest) {
-        log.info("create:: Recebendo requisição para criar um item de pedido com os dados: {}", orderItemRequest);
-        return ResponseEntity.ok(orderItemInputPort.create(orderItemRequest));
+    public ResponseEntity<OrderItemResponse> createOrderItem(@Valid @RequestBody OrderItemRequest orderItemRequest) {
+        log.info("createOrderItem:: Recebendo requisição para criar um item de pedido com os dados: {}", orderItemRequest);
+        return ResponseEntity.ok(orderItemInputPort.createOrderItem(orderItemRequest));
     }
 
     @Operation(summary = "Endpoint responsável por listar todos os itens de pedido cadastrados no sistema")
@@ -52,9 +52,9 @@ public class OrderItemController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @GetMapping
-    public ResponseEntity<Page<OrderItemProjection>> listAll(Pageable pageable) {
-        log.info("listAll:: Recebendo requisição para listar todos os itens de pedido");
-        return ResponseEntity.ok(orderItemInputPort.list(pageable));
+    public ResponseEntity<Page<OrderItemProjection>> listAllOrderItems(Pageable pageable) {
+        log.info("listAllOrderItems:: Recebendo requisição para listar todos os itens de pedido");
+        return ResponseEntity.ok(orderItemInputPort.listAllOrderItems(pageable));
     }
 
     @Operation(summary = "Endpoint responsável por buscar um item de pedido pelo id")
@@ -67,9 +67,9 @@ public class OrderItemController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<OrderItemProjection> read(@PathVariable String id) {
-        log.info("read:: Recebendo requisição para buscar um item de pedido pelo id: {}", id);
-        return ResponseEntity.ok(orderItemInputPort.read(UUID.fromString(id)));
+    public ResponseEntity<OrderItemProjection> getOrderItemById(@PathVariable String id) {
+        log.info("getOrderItemById:: Recebendo requisição para buscar um item de pedido pelo id: {}", id);
+        return ResponseEntity.ok(orderItemInputPort.getOrderItemById(UUID.fromString(id)));
     }
 
     @Operation(summary = "Endpoint responsável por buscar itens de pedido com filtros")
@@ -99,9 +99,9 @@ public class OrderItemController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<OrderItemResponse> update(@PathVariable String id, @Valid @RequestBody OrderItemRequest orderItemRequest) {
-        log.info("update:: Recebendo requisição para atualizar um item de pedido com os dados: {}", orderItemRequest);
-        return ResponseEntity.ok(orderItemInputPort.update(UUID.fromString(id), orderItemRequest));
+    public ResponseEntity<OrderItemResponse> updateOrderItem(@PathVariable String id, @Valid @RequestBody OrderItemRequest orderItemRequest) {
+        log.info("updateOrderItem:: Recebendo requisição para atualizar um item de pedido com os dados: {}", orderItemRequest);
+        return ResponseEntity.ok(orderItemInputPort.updateOrderItem(UUID.fromString(id), orderItemRequest));
     }
 
     @Operation(summary = "Endpoint responsável por deletar um item de pedido")
@@ -113,9 +113,9 @@ public class OrderItemController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        log.info("delete:: Recebendo requisição para deletar um item de pedido pelo id: {}", id);
-        orderItemInputPort.delete(UUID.fromString(id));
+    public ResponseEntity<Void> deleteOrderItem(@PathVariable String id) {
+        log.info("deleteOrderItem:: Recebendo requisição para deletar um item de pedido pelo id: {}", id);
+        orderItemInputPort.deleteOrderItem(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
 

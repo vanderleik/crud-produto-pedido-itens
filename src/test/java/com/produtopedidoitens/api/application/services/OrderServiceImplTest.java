@@ -96,7 +96,7 @@ class OrderServiceImplTest {
         when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
         when(orderConverter.toResponse(orderEntity)).thenReturn(orderResponse);
 
-        OrderResponse response = assertDoesNotThrow(() -> orderServiceImpl.create(orderRequest));
+        OrderResponse response = assertDoesNotThrow(() -> orderServiceImpl.createOrder(orderRequest));
         assertNotNull(response);
         assertEquals(orderResponse.orderDate(), response.orderDate());
         assertEquals(orderResponse.status(), response.status());
@@ -112,7 +112,7 @@ class OrderServiceImplTest {
         when(orderConverter.toEntity(orderRequest)).thenReturn(orderEntity);
         when(orderRepository.save(orderEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER));
 
-        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.create(orderRequest));
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.createOrder(orderRequest));
         assertEquals(MessagesConstants.ERROR_SAVE_ORDER, exception.getMessage());
     }
 
@@ -122,7 +122,7 @@ class OrderServiceImplTest {
         when(orderRepository.findAll()).thenReturn(List.of(orderEntity));
         when(orderConverter.toProjection(orderEntity)).thenReturn(orderProjection);
 
-        Page<OrderProjection> responseList = assertDoesNotThrow(() -> orderServiceImpl.list(PageRequest.of(0, 10)));
+        Page<OrderProjection> responseList = assertDoesNotThrow(() -> orderServiceImpl.listAllOrders(PageRequest.of(0, 10)));
         assertNotNull(responseList);
         assertEquals(1, responseList.toList().size());
         assertEquals(orderProjection.orderDate(), responseList.toList().get(0).orderDate());
@@ -140,7 +140,7 @@ class OrderServiceImplTest {
     void testListError() {
         when(orderRepository.findAll()).thenReturn(new ArrayList<>());
 
-        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.list(PageRequest.of(0, 10)));
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.listAllOrders(PageRequest.of(0, 10)));
         assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
     }
 
@@ -150,7 +150,7 @@ class OrderServiceImplTest {
         when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
         when(orderConverter.toProjection(orderEntity)).thenReturn(orderProjection);
 
-        OrderProjection response = assertDoesNotThrow(() -> orderServiceImpl.read(orderEntity.getId()));
+        OrderProjection response = assertDoesNotThrow(() -> orderServiceImpl.getOrderById(orderEntity.getId()));
         assertNotNull(response);
         assertEquals(orderProjection.orderDate(), response.orderDate());
         assertEquals(orderProjection.status(), response.status());
@@ -167,7 +167,7 @@ class OrderServiceImplTest {
     void testReadError() {
         when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.read(orderEntity.getId()));
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.getOrderById(orderEntity.getId()));
         assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
     }
 
@@ -178,7 +178,7 @@ class OrderServiceImplTest {
         when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
         when(orderConverter.toResponse(orderEntity)).thenReturn(orderResponse);
 
-        OrderResponse response = assertDoesNotThrow(() -> orderServiceImpl.update(orderEntity.getId(), orderRequest));
+        OrderResponse response = assertDoesNotThrow(() -> orderServiceImpl.updateOrder(orderEntity.getId(), orderRequest));
         assertNotNull(response);
         assertEquals(orderResponse.orderDate(), response.orderDate());
         assertEquals(orderResponse.status(), response.status());
@@ -193,13 +193,13 @@ class OrderServiceImplTest {
     void testUpdateError() {
         when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.update(orderEntity.getId(), orderRequest));
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.updateOrder(orderEntity.getId(), orderRequest));
         assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
 
         when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
         when(orderRepository.save(orderEntity)).thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER));
 
-        exception = assertThrows(Exception.class, () -> orderServiceImpl.update(orderEntity.getId(), orderRequest));
+        exception = assertThrows(Exception.class, () -> orderServiceImpl.updateOrder(orderEntity.getId(), orderRequest));
         assertEquals(MessagesConstants.ERROR_UPDATE_ORDER, exception.getMessage());
     }
 
@@ -208,7 +208,7 @@ class OrderServiceImplTest {
     void testDelete() {
         when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
 
-        assertDoesNotThrow(() -> orderServiceImpl.delete(orderEntity.getId()));
+        assertDoesNotThrow(() -> orderServiceImpl.deleteOrder(orderEntity.getId()));
         verify(orderRepository).findById(orderEntity.getId());
         verify(orderRepository).delete(orderEntity);
     }
@@ -218,13 +218,13 @@ class OrderServiceImplTest {
     void testDeleteError() {
         when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.delete(orderEntity.getId()));
+        Exception exception = assertThrows(Exception.class, () -> orderServiceImpl.deleteOrder(orderEntity.getId()));
         assertEquals(MessagesConstants.ERROR_NOT_FOUND_ORDER, exception.getMessage());
 
         when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
         doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER)).when(orderRepository).delete(orderEntity);
 
-        exception = assertThrows(Exception.class, () -> orderServiceImpl.delete(orderEntity.getId()));
+        exception = assertThrows(Exception.class, () -> orderServiceImpl.deleteOrder(orderEntity.getId()));
         assertEquals(MessagesConstants.ERROR_DELETE_ORDER, exception.getMessage());
     }
 }
