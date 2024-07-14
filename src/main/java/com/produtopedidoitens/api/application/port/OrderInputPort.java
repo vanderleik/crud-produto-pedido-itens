@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public interface OrderInputPort {
 
-    OrderResponse create(OrderRequest orderRequest);
-    Page<OrderProjection> list(Pageable pageable);
-    OrderProjection read(UUID id);
-    OrderResponse update(UUID id, OrderRequest orderRequest);
-    void delete(UUID id);
+    OrderResponse createOrder(OrderRequest orderRequest);
+    Page<OrderProjection> listAllOrders(Pageable pageable);
+    OrderProjection getOrderById(UUID id);
+    OrderResponse updateOrder(UUID id, OrderRequest orderRequest);
+    void deleteOrder(UUID id);
     Page<OrderProjection> getItemsWithFilters(String orderNumber, String status, Pageable pageable);
 
 }

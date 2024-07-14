@@ -3,6 +3,7 @@ package com.produtopedidoitens.api.adapters.web.responses;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.PageImpl;
@@ -12,7 +13,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PageableResponse<T> extends PageImpl {
+@EqualsAndHashCode(callSuper = false)
+public class PageableResponse<T> extends PageImpl<T> {
 
     private boolean first;
     private boolean last;
@@ -36,6 +38,5 @@ public class PageableResponse<T> extends PageImpl {
         this.first = first;
         this.totalPages = totalPages;
         this.numberOfElements = numberOfElements;
-
     }
 }

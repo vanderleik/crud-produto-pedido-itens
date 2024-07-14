@@ -84,7 +84,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve criar um pedido")
     void testCreate() throws Exception {
-        when(orderInputPort.create(orderRequest)).thenReturn(orderResponse);
+        when(orderInputPort.createOrder(orderRequest)).thenReturn(orderResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +97,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve retornar um erro ao criar um pedido")
     void testCreateError() throws Exception {
-        when(orderInputPort.create(orderRequest)).thenThrow(new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER));
+        when(orderInputPort.createOrder(orderRequest)).thenThrow(new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER));
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -114,7 +114,7 @@ class OrderControllerTest {
         List<OrderProjection> orderProjectionList = List.of(orderProjection);
         Page<OrderProjection> projectionPage = new PageImpl<>(orderProjectionList, pageable, orderProjectionList.size());
 
-        when(orderInputPort.list(pageable)).thenReturn(projectionPage);
+        when(orderInputPort.listAllOrders(pageable)).thenReturn(projectionPage);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -126,7 +126,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve retornar um erro ao buscar todos os pedidos")
     void testFindAllError() throws Exception {
-        when(orderInputPort.list(PageRequest.of(0, 10)))
+        when(orderInputPort.listAllOrders(PageRequest.of(0, 10)))
                 .thenThrow(new ProductNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL)
@@ -139,7 +139,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve buscar um pedido pelo id")
     void testRead() throws Exception {
-        when(orderInputPort.read(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))).thenReturn(orderProjection);
+        when(orderInputPort.getOrderById(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))).thenReturn(orderProjection);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -151,7 +151,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve retornar um erro ao buscar um pedido pelo id")
     void testReadError() throws Exception {
-        when(orderInputPort.read(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")))
+        when(orderInputPort.getOrderById(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")))
                 .thenThrow(new OrderNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")
@@ -164,7 +164,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve atualizar um pedido")
     void testUpdate() throws Exception {
-        when(orderInputPort.update(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"), orderRequest)).thenReturn(orderResponse);
+        when(orderInputPort.updateOrder(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"), orderRequest)).thenReturn(orderResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL + "/f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -177,7 +177,7 @@ class OrderControllerTest {
     @Test
     @DisplayName("Deve retornar um erro ao atualizar um pedido")
     void testUpdateError() throws Exception {
-        when(orderInputPort.update(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"), orderRequest))
+        when(orderInputPort.updateOrder(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"), orderRequest))
                 .thenThrow(new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER));
 
         mockMvc.perform(MockMvcRequestBuilders.put(URL + "/f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")
@@ -201,7 +201,7 @@ class OrderControllerTest {
     @DisplayName("Deve retornar um erro ao deletar um pedido pelo id")
     void testDeleteError() throws Exception {
         doThrow(new BadRequestException(MessagesConstants.ERROR_DELETE_ORDER))
-                .when(orderInputPort).delete(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"));
+                .when(orderInputPort).deleteOrder(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"));
 
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f")
                 .contentType(MediaType.APPLICATION_JSON))

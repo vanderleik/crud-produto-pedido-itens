@@ -39,9 +39,9 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PostMapping
-    public ResponseEntity<OrderResponse> create(@Valid @RequestBody OrderRequest orderRequest) {
-        log.info("create:: Recebendo requisição para criar um pedido com os dados: {}", orderRequest);
-        return ResponseEntity.ok(orderInputPort.create(orderRequest));
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
+        log.info("createOrder:: Recebendo requisição para criar um pedido com os dados: {}", orderRequest);
+        return ResponseEntity.ok(orderInputPort.createOrder(orderRequest));
     }
 
     @Operation(summary = "Endpoint responsável por listar todos os pedidos cadastrados no sistema")
@@ -52,9 +52,9 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @GetMapping
-    public ResponseEntity<Page<OrderProjection>> findAll(Pageable pageable) {
+    public ResponseEntity<Page<OrderProjection>> listAllOrders(Pageable pageable) {
         log.info("findAll:: Recebendo requisição para buscar todos os pedidos");
-        return ResponseEntity.ok(orderInputPort.list(pageable));
+        return ResponseEntity.ok(orderInputPort.listAllOrders(pageable));
     }
 
     @Operation(summary = "Endpoint responsável por buscar um pedido pelo id")
@@ -67,9 +67,9 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<OrderProjection> read(@PathVariable String id) {
-        log.info("findById:: Recebendo requisição para buscar um pedido pelo id: {}", id);
-        return ResponseEntity.ok(orderInputPort.read(UUID.fromString(id)));
+    public ResponseEntity<OrderProjection> getOrderById(@PathVariable String id) {
+        log.info("getOrderById:: Recebendo requisição para buscar um pedido pelo id: {}", id);
+        return ResponseEntity.ok(orderInputPort.getOrderById(UUID.fromString(id)));
     }
 
     @Operation(summary = "Endpoint responsável por buscar pedidos com filtros")
@@ -102,9 +102,9 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<OrderResponse> update(@PathVariable String id, @Valid @RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<OrderResponse> updateOrder(@PathVariable String id, @Valid @RequestBody OrderRequest orderRequest) {
         log.info("update:: Recebendo requisição para atualizar um pedido com os dados: {}", orderRequest);
-        return ResponseEntity.ok(orderInputPort.update(UUID.fromString(id), orderRequest));
+        return ResponseEntity.ok(orderInputPort.updateOrder(UUID.fromString(id), orderRequest));
     }
 
     @Operation(summary = "Endpoint responsável por deletar um pedido")
@@ -116,9 +116,9 @@ public class OrderController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
         log.info("delete:: Recebendo requisição para deletar um pedido pelo id: {}", id);
-        orderInputPort.delete(UUID.fromString(id));
+        orderInputPort.deleteOrder(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
 

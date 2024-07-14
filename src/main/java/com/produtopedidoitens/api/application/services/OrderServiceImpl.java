@@ -38,60 +38,60 @@ public class OrderServiceImpl implements OrderInputPort {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public OrderResponse create(OrderRequest orderRequest) {
-        log.info("create:: Recebendo OrderRequest: {}", orderRequest);
+    public OrderResponse createOrder(OrderRequest orderRequest) {
+        log.info("createOrder:: Recebendo OrderRequest: {}", orderRequest);
         orderValidator.validate(orderRequest);
 
         try {
             OrderEntity entitySaved = orderRepository.save(getEntity(orderRequest));
             OrderResponse response = orderConverter.toResponse(entitySaved);
-            log.info("create:: Salvando pedido: {}", response);
+            log.info("createOrder:: Salvando pedido: {}", response);
             return response;
         } catch (Exception e) {
-            log.error("create:: Ocorreu um erro ao salvar pedido: {}");
+            log.error("createOrder:: Ocorreu um erro ao salvar pedido: {}");
             throw new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER);
         }
     }
 
     @Override
-    public Page<OrderProjection> list(Pageable pageable) {
-        log.info("list:: Listando pedidos");
+    public Page<OrderProjection> listAllOrders(Pageable pageable) {
+        log.info("listAllOrders:: Listando pedidos");
         List<OrderEntity> list = getOrderEntities();
         List<OrderProjection> orderProjectionList = list.stream().map(orderConverter::toProjection).toList();
-        log.info("list:: Pedidos encontrados: {}", orderProjectionList);
+        log.info("listAllOrders:: Pedidos encontrados: {}", orderProjectionList);
 
         return new PageImpl<>(orderProjectionList, pageable, orderProjectionList.size());
     }
 
     @Override
-    public OrderProjection read(UUID id) {
-        log.info("read:: Buscando pedido por id: {}", id);
+    public OrderProjection getOrderById(UUID id) {
+        log.info("getOrderById:: Buscando pedido por id: {}", id);
         OrderEntity entity = getOrderEntity(id);
         OrderProjection orderProjection = orderConverter.toProjection(entity);
-        log.info("read:: Pedido encontrado: {}", orderProjection);
+        log.info("getOrderById:: Pedido encontrado: {}", orderProjection);
         return orderProjection;
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public OrderResponse update(UUID id, OrderRequest orderRequest) {
-        log.info("update:: Recebendo requisição para atualizar pedido: {}", orderRequest);
+    public OrderResponse updateOrder(UUID id, OrderRequest orderRequest) {
+        log.info("updateOrder:: Recebendo requisição para atualizar pedido: {}", orderRequest);
         OrderEntity entity = getOrderEntity(id);
         updateEntity(entity, orderRequest);
         try {
             OrderEntity entitySaved = orderRepository.save(entity);
             OrderResponse response = orderConverter.toResponse(entitySaved);
-            log.info("update:: Atualizando pedido: {}", response);
+            log.info("updateOrder:: Atualizando pedido: {}", response);
             return response;
         } catch (Exception e) {
-            log.error("update:: Ocorreu um erro ao atualizar pedido");
+            log.error("updateOrder:: Ocorreu um erro ao atualizar pedido");
             throw new BadRequestException(MessagesConstants.ERROR_UPDATE_ORDER);
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delete(UUID id) {
+    public void deleteOrder(UUID id) {
         log.info("delete:: Recebendo requisição para deletar pedido por id: {}", id);
         OrderEntity entity = getOrderEntity(id);
         try {
@@ -133,7 +133,7 @@ public class OrderServiceImpl implements OrderInputPort {
     private OrderEntity getOrderEntity(UUID id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("read:: Ocorreu um erro ao buscar pedido por id: {}", MessagesConstants.ERROR_NOT_FOUND_ORDER);
+                    log.error("getOrderById:: Ocorreu um erro ao buscar pedido por id: {}", MessagesConstants.ERROR_NOT_FOUND_ORDER);
                     throw new OrderNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER);
                 });
     }
@@ -145,7 +145,7 @@ public class OrderServiceImpl implements OrderInputPort {
     private List<OrderEntity> getOrderEntities() {
         List<OrderEntity> list = orderRepository.findAll();
         if (list.isEmpty()) {
-            log.error("list:: Nenhum pedido encontrado");
+            log.error("listAllOrders:: Nenhum pedido encontrado");
             throw new OrderNotFoundException(MessagesConstants.ERROR_NOT_FOUND_ORDER);
         }
         return list;
