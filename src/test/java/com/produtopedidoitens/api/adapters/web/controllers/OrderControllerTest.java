@@ -28,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -68,8 +67,6 @@ class OrderControllerTest {
                 .orderDate(LocalDate.now())
                 .status("Aberto")
                 .discount(BigDecimal.valueOf(0.00))
-                .dthreg(LocalDateTime.now())
-                .dthalt(LocalDateTime.now())
                 .version(0L)
                 .build();
 

@@ -12,6 +12,9 @@ public record CatalogItemRequest(
         @Schema(description = "Descrição do item que será cadastrado", example = "Café 100% arábica", required = true)
         String catalogItemDescription,
 
+        @Schema(description = "Número do item", example = "123456")
+        String catalogItemNumber,
+
         @Schema(description = "Preço do item", example = "28.00", required = true)
         String price,
 

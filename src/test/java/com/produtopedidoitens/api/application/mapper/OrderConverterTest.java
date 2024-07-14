@@ -78,8 +78,6 @@ class OrderConverterTest {
         assertEquals(orderEntity.getOrderDate(), response.orderDate());
         assertEquals(EnumConverter.toString(orderEntity.getStatus()), response.status());
         assertEquals(orderEntity.getDiscount(), response.discount());
-        assertEquals(orderEntity.getDthreg(), response.dthreg());
-        assertEquals(orderEntity.getDthalt(), response.dthalt());
         assertEquals(orderEntity.getVersion(), response.version());
     }
 

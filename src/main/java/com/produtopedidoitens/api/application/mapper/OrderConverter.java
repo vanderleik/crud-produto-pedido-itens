@@ -45,8 +45,6 @@ public class OrderConverter {
                 .orderDate(entitySaved.getOrderDate())
                 .status(EnumConverter.toString(entitySaved.getStatus()))
                 .discount(entitySaved.getDiscount())
-                .dthreg(entitySaved.getDthreg())
-                .dthalt(entitySaved.getDthalt())
                 .version(entitySaved.getVersion())
                 .build();
     }

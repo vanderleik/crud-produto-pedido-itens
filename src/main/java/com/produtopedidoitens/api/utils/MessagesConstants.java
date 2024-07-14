@@ -16,8 +16,7 @@ public class MessagesConstants {
     public static final String PRODUCT_PRICE_NUMBER = "O preço do produto/serviço deve ser um valor numérico";
 
     //ORDER
-    public static final String ORDER_DATE_NOT_NULL = "A data do pedido não deve ser preenchida";
-    public static final String ORDER_DATE_STATUS_NOT_NULL = "O status do pedido deve ser preenchido";
+    public static final String ORDER_DATE_NOT_NULL = "A data do pedido deve ser preenchida";
     public static final String ERROR_SAVE_ORDER = "Erro ao salvar pedido";
     public static final String ERROR_NOT_FOUND_ORDER = "Nenhum pedido encontrado";
     public static final String ERROR_UPDATE_ORDER = "Erro ao atualizar pedido";
@@ -25,6 +24,8 @@ public class MessagesConstants {
     public static final String ORDER_NUMBER_NOT_NULL = "O número do pedido não pode ser nulo";
     public static final String ORDER_DISCOUNT_MIN = "O desconto do pedido deve ser maior que zero";
     public static final String ORDER_DISCOUNT_MAX = "O desconto do pedido deve ser menor ou igual a 100";
+    public static final String ORDER_STATUS_NOT_NULL = "O status do pedido deve ser preenchido com \"Aberto\" ou \"Fechado\"";
+    public static final String ORDER_DISCOUNT_NOT_NULL = "O desconto do pedido deve ser preenchido com um valor entre 0.00 e 100.00, com ponto e duas casas decimais";
 
     //ORDER ITEM
     public static final String ORDER_ITEM_QUANTITY_NOT_NULL = "A quantidade do item do pedido deve ser preenchida";
