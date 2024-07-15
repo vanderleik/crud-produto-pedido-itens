@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderInputPort {
             log.info("createOrder:: Salvando pedido: {}", response);
             return response;
         } catch (Exception e) {
-            log.error("createOrder:: Ocorreu um erro ao salvar pedido: {}");
+            log.error("createOrder:: Ocorreu um erro ao salvar pedido:");
             throw new BadRequestException(MessagesConstants.ERROR_SAVE_ORDER);
         }
     }

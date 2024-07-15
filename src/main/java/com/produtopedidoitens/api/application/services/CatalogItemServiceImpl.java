@@ -136,8 +136,8 @@ public class CatalogItemServiceImpl implements CatalogItemInputPort {
 
 
     private void beforeDelete(CatalogItemEntity catalogItemEntity) {
-        if (orderItemRepository.existsByProductId(catalogItemEntity.getId())) {
-            log.error("beforeDelete:: O produto/serviço não pode ser deletado pois está associado a um item de pedido");
+        if (Boolean.TRUE.equals(orderItemRepository.existsByProductId(catalogItemEntity.getId()))) {
+            log.error("beforeDelete:: {}", MessagesConstants.ERROR_PRODUCT_ASSOCIATED_ORDER_ITEM);
             throw new BadRequestException(MessagesConstants.ERROR_PRODUCT_ASSOCIATED_ORDER_ITEM);
         }
     }
