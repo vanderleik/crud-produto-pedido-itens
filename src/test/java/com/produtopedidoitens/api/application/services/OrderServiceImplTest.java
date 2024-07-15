@@ -10,6 +10,7 @@ import com.produtopedidoitens.api.application.exceptions.BadRequestException;
 import com.produtopedidoitens.api.application.mapper.OrderConverter;
 import com.produtopedidoitens.api.application.validators.OrderValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
+import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,6 +61,7 @@ class OrderServiceImplTest {
         orderResponse = OrderResponse.builder()
                 .id(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))
                 .orderDate(LocalDate.now())
+                .orderNumber("PED-123-2024")
                 .status("Aberto")
                 .discount(BigDecimal.valueOf(0.00))
                 .version(0L)
@@ -68,6 +70,7 @@ class OrderServiceImplTest {
         orderProjection = OrderProjection.builder()
                 .id(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))
                 .orderDate(LocalDate.now())
+                .orderNumber("PED-123-2024")
                 .status("Aberto")
                 .items(new ArrayList<>())
                 .grossTotal(BigDecimal.valueOf(100.00))
@@ -78,6 +81,7 @@ class OrderServiceImplTest {
         orderEntity = OrderEntity.builder()
                 .id(UUID.fromString("f47b3b2b-4b0b-4b7e-8b3e-3b3e4b7b2b4f"))
                 .orderDate(LocalDate.now())
+                .orderNumber("PED-123-2024")
                 .status(EnumOrderStatus.OPEN)
                 .items(new ArrayList<>())
                 .grossTotal(BigDecimal.valueOf(100.00))
@@ -226,5 +230,25 @@ class OrderServiceImplTest {
 
         exception = assertThrows(Exception.class, () -> orderServiceImpl.deleteOrder(orderEntity.getId()));
         assertEquals(MessagesConstants.ERROR_DELETE_ORDER, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Deve buscar pedidos por filtro")
+    void testSearchOrders() {
+        List<OrderEntity> orderEntityList = List.of(orderEntity);
+        List<OrderProjection> expectedProjectionList = List.of(orderProjection);
+
+        when(orderRepository.findAll(any(Predicate.class))).thenReturn(orderEntityList);
+        when(orderConverter.toProjection(orderEntity)).thenReturn(orderProjection);
+
+        List<OrderProjection> result = orderServiceImpl.searchOrders("PED-123-2024", EnumOrderStatus.OPEN);
+
+        assertNotNull(result);
+        assertEquals(expectedProjectionList.size(), result.size());
+        assertEquals(expectedProjectionList.get(0), result.get(0));
+
+        verify(orderRepository).findAll(any(Predicate.class));
+        verify(orderConverter, times(orderEntityList.size())).toProjection(orderEntity);
+
     }
 }
