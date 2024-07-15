@@ -1,16 +1,17 @@
 package com.produtopedidoitens.api.application.services;
 
-import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.persistence.repositories.CatalogItemRepository;
+import com.produtopedidoitens.api.adapters.persistence.repositories.OrderItemRepository;
 import com.produtopedidoitens.api.adapters.web.projections.CatalogItemProjection;
 import com.produtopedidoitens.api.adapters.web.requests.CatalogItemRequest;
 import com.produtopedidoitens.api.adapters.web.responses.CatalogItemResponse;
-import com.produtopedidoitens.api.application.exceptions.BadRequestException;
-import com.produtopedidoitens.api.application.mapper.ProductConverter;
 import com.produtopedidoitens.api.application.domain.entities.CatalogItemEntity;
 import com.produtopedidoitens.api.application.domain.enums.EnumCatalogItemType;
+import com.produtopedidoitens.api.application.exceptions.BadRequestException;
+import com.produtopedidoitens.api.application.mapper.ProductConverter;
 import com.produtopedidoitens.api.application.validators.CatalogItemValidator;
 import com.produtopedidoitens.api.utils.MessagesConstants;
+import com.querydsl.core.types.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ProductServiceImplTest {
+class CatalogItemServiceImplTest {
 
     @InjectMocks
     private CatalogItemServiceImpl productServiceImpl;
@@ -221,6 +222,19 @@ class ProductServiceImplTest {
 
         exception = assertThrows(Exception.class, () -> productServiceImpl.deleteCatalogItem(productEntity.getId()));
         assertEquals(MessagesConstants.ERROR_DELETE_PRODUCT, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Deve buscar produtos com filtros")
+    void testGetItemsWithFilters() {
+        when(catalogItemRepository.findAll(any(Predicate.class))).thenReturn(List.of(productEntity));
+
+        List<CatalogItemEntity> result = productServiceImpl.getItemsWithFilters("Test", true);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Product", result.get(0).getCatalogItemName());
+        assertEquals(true, result.get(0).getIsActive());
     }
 
 }
